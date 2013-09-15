@@ -1,6 +1,6 @@
 {
     "name": "paxx/withings",
-    "description": "Withings API - Withings Body metrics Services API http:\/\/www.withings.com\/en\/api\/wbsapiv2",
+    "description": "Withings API - Withings Body metrics Services API http:\/\/www.withings.com\/api",
     "license" : "MIT",
     "keywords" : ["withings", "php", "wbs", "wbsapi", "wbsapi2", "laravel"],
     "authors": [

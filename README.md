@@ -10,6 +10,8 @@ Complete with oAuth1-integration.
 
 I developed this using Laravel 4
 
+Input parameters can be found here: http://www.withings.com/api
+
 ### Todo
 
 * Write tests
