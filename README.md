@@ -10,5 +10,5 @@ This one should fill all your needs.
 
 * Write tests
 * Other stuffs
-* Learn some more about PHP-FIG
+* Learn more about PSR-FIG
 * Add PHPDoc comments
