@@ -8,7 +8,7 @@ This one should fill all your needs.
 
 ### Todo
 
-Write tests
-Other stuffs
-Learn some more about PHP-FIG
-Add PHPDoc comments
+* Write tests
+* Other stuffs
+* Learn some more about PHP-FIG
+* Add PHPDoc comments
