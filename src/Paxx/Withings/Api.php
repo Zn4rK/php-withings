@@ -118,7 +118,7 @@ class Api
 
         // Activity... I don't have any withingsproducts that have
         // activites so this is untested...
-        $activity = $this->request('v2/measure', 'getactivity');
+        $activity = $this->request('v2/measure', 'getactivity', ['date' => $params['date']]);
 
         return new Collection\Activity($activity);
     }
