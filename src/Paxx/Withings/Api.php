@@ -112,13 +112,30 @@ class Api
     }
 
     public function getActivity(array $params=array()) {
-        if(empty($params) || !isset($params['date'])) {
-            throw new ApiException('Parameter "date" can\'t be empty');
+        
+        //Check date is present and not empty
+        if( isset($params['date']) ){
+            if( !empty($params['date']) ){
+                $activity = $this->request('v2/measure', 'getactivity', ['date' => $params['date']]);
+            }
+            else{
+                throw new ApiException('Parameter "date" can\'t be empty');
+            }
         }
-
-        // Activity... I don't have any withingsproducts that have
-        // activites so this is untested...
-        $activity = $this->request('v2/measure', 'getactivity', ['date' => $params['date']]);
+        //If we don't get a date but a range
+        elseif(isset($params['startdateymd']) && !empty($params['startdateymd'])){
+            //Making sure there's an end date
+            if(!isset($params['enddateymd'])){
+                throw new ApiException('You need to enter a start and end date.');
+            }
+            else{
+                $activity = $this->request('v2/measure', 'getactivity', ['startdateymd' => $params['startdateymd'], 'enddateymd' => $params['enddateymd']]);
+            }
+        }
+        //If we don't get any parameters sent
+        else{
+            throw new ApiException('You need to pass either a date or a range of dates.');
+        }
 
         return new Collection\Activity($activity);
     }
