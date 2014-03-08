@@ -1,7 +1,8 @@
 <?php
-session_start();
 
 include '../vendor/autoload.php';
+
+session_start();
 
 use Paxx\Withings\Provider\Withings as WithingsAuth;
 use Paxx\Withings\Api as WithingsApi;
