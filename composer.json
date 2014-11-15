@@ -17,8 +17,8 @@
         "guzzle/guzzle": "~3.3"
     },
     "autoload": {
-        "psr-0": {
-            "Paxx\\Withings": "src/"
+        "psr-4": {
+            "Paxx\\Withings\\": "src/Paxx/Withings"
         }
     },
     "minimum-stability": "dev"
