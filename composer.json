@@ -14,7 +14,7 @@
         "php": ">=5.3.0",
         "illuminate/support": "~4.1",
         "chrisnharvey/oauth1": "dev-master",
-        "guzzle/guzzle": ">=3.6.0,<3.8.0-dev"
+        "guzzle/guzzle": "~3.3"
     },
     "autoload": {
         "psr-0": {
