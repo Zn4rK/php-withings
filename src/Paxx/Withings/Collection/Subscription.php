@@ -2,4 +2,6 @@
 
 namespace Paxx\Withings\Collection;
 
-class Subscription extends Collection {}
+class Subscription extends Collection
+{
+}

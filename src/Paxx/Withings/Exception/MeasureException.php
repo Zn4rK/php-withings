@@ -2,4 +2,6 @@
 
 namespace Paxx\Withings\Exception;
 
-class MeasureException extends \Exception {};
+class MeasureException extends \Exception
+{
+}
