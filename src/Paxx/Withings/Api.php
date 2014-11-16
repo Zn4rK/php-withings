@@ -124,6 +124,14 @@ class Api
         return new Collection\User($user);
     }
 
+    /**
+     * Get user's activity
+     *
+     * @param array $params        Array of params. Requires 'date' OR 'startdateymd' and 'enddateymd', all formatted YYYY-mm-dd
+     * @return Collection\Activity
+     * @throws ApiException        If a valid set of data parameters isn't sent along
+     * @throws WbsException        If an error is returned from the API
+     */
     public function getActivity(array $params = array())
     {
         // Check date is present and not empty
@@ -136,7 +144,7 @@ class Api
         }
         // If we don't get a date but a range
         elseif (isset($params['startdateymd']) && ! empty($params['startdateymd'])) {
-            //Making sure there's an end date
+            // Making sure there's an end date
             if (! isset($params['enddateymd'])) {
                 throw new ApiException('You need to enter a start and end date.');
             } else {
