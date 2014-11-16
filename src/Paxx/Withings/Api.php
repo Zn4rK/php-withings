@@ -88,18 +88,25 @@ class Api
         }
     }
 
-    private function request($service = '', $action = '', $params = array(), $method = 'GET')
+    /**
+     * Make a request to the API
+     *
+     * @param string $path   Path to the service
+     * @param string $action Action query string
+     * @param array $params  Parameters
+     * @return bool
+     * @throws WbsException
+     */
+    private function request($path = '', $action = '', $params = array())
     {
-        // Set the user_id
         $params['userid'] = $this->user_id;
 
-        // action is just a querystring
         if (! empty($action)) {
             $params['action'] = $action;
         }
 
         // Build a request
-        $request = $this->client->get($service);
+        $request = $this->client->get($path);
 
         // Params will almost never be empty, but we'll do it like this;
         $query = $request->getQuery();
