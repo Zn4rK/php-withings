@@ -1,17 +1,13 @@
 <?php
+
 namespace Paxx\Withings\Oauth;
 
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Guzzle\Common\Event;
 use Guzzle\Plugin\Oauth\OauthPlugin as GuzzleOauth;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class OauthPlugin extends GuzzleOauth implements EventSubscriberInterface
 {
-    public function __construct($config)
-    {
-        parent::__construct($config);
-    }
-
     public function onRequestBeforeSend(Event $event)
     {
         $timestamp = $this->getTimestamp($event);
@@ -28,21 +24,21 @@ class OauthPlugin extends GuzzleOauth implements EventSubscriberInterface
             'oauth_version'          => $this->config['version'],
         );
 
-        // Stupid Withings has not implemented the Oauth1 API according to the specs.
-        // So we need to use querystrings instead...
+        // Withings has not implemented the Oauth1 API according to the specs,
+        // so we need to use querystrings instead.
         $query = $request->getQuery();
 
-        // Fetch the query params;
+        // Fetch the query params
         $params = $query->getAll();
         $params = $params+$authorizationParams;
 
-        // Sort them
+        // Sort the query params
         ksort($params);
 
         $query = $query->clear();
 
-        foreach($params as $key => $value) {
-        	$query->set($key, $value);
+        foreach ($params as $key => $value) {
+            $query->set($key, $value);
         }
 
         return $authorizationParams;

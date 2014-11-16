@@ -2,4 +2,6 @@
 
 namespace Paxx\Withings\Exception;
 
-class WbsException extends \Exception {}
+class WbsException extends \Exception
+{
+}

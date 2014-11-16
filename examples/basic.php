@@ -2,15 +2,15 @@
 
 include '../vendor/autoload.php';
 
+use Paxx\Withings\Api as WithingsApi;
+use Paxx\Withings\Provider\Withings as WithingsAuth;
+
 session_start();
 
-use Paxx\Withings\Provider\Withings as WithingsAuth;
-use Paxx\Withings\Api as WithingsApi;
-
 $config = array(
-	'consumer_key' 	  => 'your-key',
-	'consumer_secret' => 'your-secret',
-	'redirect_url' 	  => 'http://your-callback.tld/',
+    'consumer_key'    => 'your-key',
+    'consumer_secret' => 'your-secret',
+    'redirect_url'    => 'http://your-callback.tld/',
 );
 
 $oauth = new WithingsAuth($config);
@@ -23,7 +23,7 @@ if ($oauth->isCallback()) {
 } else {
     $token = $oauth->requestToken();
 
-    // You can use any (temporary)storage you wan't.
+    // You can use any (temporary) storage you want
     $_SESSION['token'] = $token;
 
     $url = $oauth->authorize($token);
@@ -32,14 +32,13 @@ if ($oauth->isCallback()) {
     exit;
 }
 
-$config = $config+array(
-	'access_token' 	  => $tokens->access_token,
-	'token_secret' 	  => $tokens->secret,
-	'user_id'		  => $tokens->uid
+$config = $config + array(
+    'access_token' => $tokens->access_token,
+    'token_secret' => $tokens->secret,
+    'user_id'      => $tokens->uid
 );
 
 $api = new WithingsApi($config);
 $user = $api->getUser();
 
 echo '<pre>' . print_r($user, true) . '</pre>';
-?>

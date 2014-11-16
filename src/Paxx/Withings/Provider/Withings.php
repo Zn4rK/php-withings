@@ -1,19 +1,20 @@
 <?php
+
 namespace Paxx\Withings\Provider;
 
-use \OAuth1\Provider;
-use \OAuth1\Provider\ProviderInterface;
-use \OAuth1\Request\Resource;
+use OAuth1\Provider;
+use OAuth1\Provider\ProviderInterface;
 
 class Withings extends Provider implements ProviderInterface
 {
-    public $name = 'withings';
+    public $name     = 'withings';
     public $endpoint = 'https://oauth.withings.com/account/';
-    public $uid_key = 'userid';
+    public $uid_key  = 'userid';
 
-    public function __construct(array $params = null) {
-        // Just for normalization purposes...
-        if(isset($params['consumer_key'], $params['consumer_secret'])) {
+    public function __construct(array $params = null)
+    {
+        // Normalize params
+        if (isset($params['consumer_key'], $params['consumer_secret'])) {
             $params['id'] = $params['consumer_key'];
             $params['secret'] = $params['consumer_secret'];
 
@@ -38,6 +39,7 @@ class Withings extends Provider implements ProviderInterface
         return $this->endpoint . 'access_token';
     }
 
-    public function getUserInfo() {}
-
-} // End Provider_Tumblr
+    public function getUserInfo()
+    {
+    }
+}
