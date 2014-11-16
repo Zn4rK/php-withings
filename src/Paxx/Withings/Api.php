@@ -58,6 +58,12 @@ class Api
         $this->client->addSubscriber(new OauthPlugin($config));
     }
 
+    /**
+     * Validate that the required parameters were passed into object constructor
+     *
+     * @param array $params
+     * @throws ApiException
+     */
     private function validateParams(array $params)
     {
         foreach ($this->required_params as $param) {
@@ -67,6 +73,12 @@ class Api
         }
     }
 
+    /**
+     * Hydrate object from passed parameters
+     *
+     * @param array $params
+     * @throws ApiException
+     */
     private function hydrateParams(array $params)
     {
         $this->validateParams($params);
