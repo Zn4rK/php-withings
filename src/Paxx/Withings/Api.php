@@ -90,6 +90,8 @@ class Api
         if($response['status'] !== 0) {
             if(isset($this->errors[$response['status']])) {
                 throw new WbsException($this->errors[$response['status']], $response['status']);
+            } else {
+                throw new WbsException($response['error']);
             }
         }
 
