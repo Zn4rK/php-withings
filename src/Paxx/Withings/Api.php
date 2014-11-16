@@ -159,9 +159,15 @@ class Api
         return new Collection\Activity($activity);
     }
 
+    /**
+     * Get user's measurements
+     *
+     * @param array $params
+     * @return Collection\Measure
+     * @throws WbsException       If an error is returned from the API
+     */
     public function getMeasures(array $params = array())
     {
-        // Returns Measure
         $measure = $this->request('measure', 'getmeas', $params);
 
         return new Collection\Measure($measure);
