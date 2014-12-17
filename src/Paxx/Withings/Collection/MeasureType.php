@@ -14,7 +14,8 @@ class MeasureType extends Collection
         8  => 'fat_mass_weight',
         9  => 'diastolic_blood_pressure',
         10 => 'systolic_blood_pressure',
-        11 => 'heart_pulse'
+        11 => 'heart_pulse',
+        54 => 'sp02'
     );
 
     public function __construct(array $params = array())
