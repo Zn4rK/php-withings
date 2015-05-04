@@ -2,10 +2,10 @@
 
 namespace Paxx\Withings;
 
-use Guzzle\Http\Client as GuzzleClient;
+use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Subscriber\Oauth\Oauth1;
 use Paxx\Withings\Exception\ApiException;
 use Paxx\Withings\Exception\WbsException;
-use Paxx\Withings\Oauth\OauthPlugin;
 
 class Api
 {
@@ -54,8 +54,13 @@ class Api
             'token_secret'    => $this->token_secret
         );
 
-        $this->client = new GuzzleClient(self::ENDPOINT);
-        $this->client->addSubscriber(new OauthPlugin($config));
+        $this->client = new GuzzleClient([
+            'base_url' => static::ENDPOINT,
+            'defaults' => ['auth' => 'oauth']
+        ]);
+
+        $this->oauth = new Oauth1($config);
+        $this->client->getEmitter()->attach($this->oauth);
     }
 
     /**
