@@ -4,6 +4,8 @@ namespace Paxx\Withings\Provider;
 use League\OAuth1\Client\Credentials\TokenCredentials;
 use League\OAuth1\Client\Server\Server;
 use League\OAuth1\Client\Server\User;
+use League\OAuth1\Client\Credentials\CredentialsException;
+use League\OAuth1\Client\Credentials\TemporaryCredentials;
 
 class Withings extends Server
 {
@@ -16,7 +18,7 @@ class Withings extends Server
      */
     public function urlTemporaryCredentials()
     {
-        return $this->$endpoint . '/account/request_token';
+        return $this->endpoint . '/account/request_token';
     }
 
     /**
@@ -26,7 +28,7 @@ class Withings extends Server
      */
     public function urlAuthorization()
     {
-        return $this->$endpoint . '/account/authorize';
+        return $this->endpoint . '/account/authorize';
     }
 
     /**
@@ -36,7 +38,7 @@ class Withings extends Server
      */
     public function urlTokenCredentials()
     {
-        return $this->$endpoint . '/account/access_token';
+        return $this->endpoint . '/account/access_token';
     }
 
     /**
@@ -46,7 +48,7 @@ class Withings extends Server
      */
     public function urlUserDetails()
     {
-        return $this->$endpoint . '/user';
+        return $this->endpoint . '/user';
     }
 
     /**
@@ -103,6 +105,28 @@ class Withings extends Server
     public function userScreenName($data, TokenCredentials $tokenCredentials)
     {
         // TODO: Implement userScreenName() method.
+    }
+
+    /**
+     * Creates temporary credentials from the body response.
+     *
+     * @param string $body
+     *
+     * @return TemporaryCredentials
+     */
+    protected function createTemporaryCredentials($body)
+    {
+        parse_str($body, $data);
+
+        if (!$data || !is_array($data)) {
+            throw new CredentialsException('Unable to parse temporary credentials response.');
+        }
+
+        $temporaryCredentials = new TemporaryCredentials();
+        $temporaryCredentials->setIdentifier($data['oauth_token']);
+        $temporaryCredentials->setSecret($data['oauth_token_secret']);
+
+        return $temporaryCredentials;
     }
 
 }
