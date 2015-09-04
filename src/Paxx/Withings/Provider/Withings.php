@@ -1,45 +1,132 @@
 <?php
-
 namespace Paxx\Withings\Provider;
 
-use OAuth1\Provider;
-use OAuth1\Provider\ProviderInterface;
+use League\OAuth1\Client\Credentials\TokenCredentials;
+use League\OAuth1\Client\Server\Server;
+use League\OAuth1\Client\Server\User;
+use League\OAuth1\Client\Credentials\CredentialsException;
+use League\OAuth1\Client\Credentials\TemporaryCredentials;
 
-class Withings extends Provider implements ProviderInterface
+class Withings extends Server
 {
-    public $name     = 'withings';
-    public $endpoint = 'https://oauth.withings.com/account/';
-    public $uid_key  = 'userid';
+    public $endpoint = 'https://oauth.withings.com';
 
-    public function __construct(array $params = null)
+    /**
+     * Get the URL for retrieving temporary credentials.
+     *
+     * @return string
+     */
+    public function urlTemporaryCredentials()
     {
-        // Normalize params
-        if (isset($params['consumer_key'], $params['consumer_secret'])) {
-            $params['id'] = $params['consumer_key'];
-            $params['secret'] = $params['consumer_secret'];
+        return $this->endpoint . '/account/request_token';
+    }
 
-            unset($params['consumer_key'], $params['consumer_secret']);
+    /**
+     * Get the URL for redirecting the resource owner to authorize the client.
+     *
+     * @return string
+     */
+    public function urlAuthorization()
+    {
+        return $this->endpoint . '/account/authorize';
+    }
+
+    /**
+     * Get the URL retrieving token credentials.
+     *
+     * @return string
+     */
+    public function urlTokenCredentials()
+    {
+        return $this->endpoint . '/account/access_token';
+    }
+
+    /**
+     * Get the URL for retrieving user details.
+     *
+     * @return string
+     */
+    public function urlUserDetails()
+    {
+        return $this->endpoint . '/user';
+    }
+
+    /**
+     * Take the decoded data from the user details URL and convert
+     * it to a User object.
+     *
+     * @param mixed            $data
+     * @param TokenCredentials $tokenCredentials
+     *
+     * @return User
+     */
+    public function userDetails($data, TokenCredentials $tokenCredentials)
+    {
+        // TODO: Implement userDetails() method.
+    }
+
+    /**
+     * Take the decoded data from the user details URL and extract
+     * the user's UID.
+     *
+     * @param mixed            $data
+     * @param TokenCredentials $tokenCredentials
+     *
+     * @return string|int
+     */
+    public function userUid($data, TokenCredentials $tokenCredentials)
+    {
+        // TODO: Implement userUid() method.
+    }
+
+    /**
+     * Take the decoded data from the user details URL and extract
+     * the user's email.
+     *
+     * @param mixed            $data
+     * @param TokenCredentials $tokenCredentials
+     *
+     * @return string
+     */
+    public function userEmail($data, TokenCredentials $tokenCredentials)
+    {
+        // TODO: Implement userEmail() method.
+    }
+
+    /**
+     * Take the decoded data from the user details URL and extract
+     * the user's screen name.
+     *
+     * @param mixed            $data
+     * @param TokenCredentials $tokenCredentials
+     *
+     * @return string
+     */
+    public function userScreenName($data, TokenCredentials $tokenCredentials)
+    {
+        // TODO: Implement userScreenName() method.
+    }
+
+    /**
+     * Creates temporary credentials from the body response.
+     *
+     * @param string $body
+     *
+     * @return TemporaryCredentials
+     */
+    protected function createTemporaryCredentials($body)
+    {
+        parse_str($body, $data);
+
+        if (!$data || !is_array($data)) {
+            throw new CredentialsException('Unable to parse temporary credentials response.');
         }
 
-        parent::__construct($params);
+        $temporaryCredentials = new TemporaryCredentials();
+        $temporaryCredentials->setIdentifier($data['oauth_token']);
+        $temporaryCredentials->setSecret($data['oauth_token_secret']);
+
+        return $temporaryCredentials;
     }
 
-    public function requestTokenUrl()
-    {
-        return $this->endpoint . 'request_token';
-    }
-
-    public function authorizeUrl()
-    {
-        return $this->endpoint . 'authorize';
-    }
-
-    public function accessTokenUrl()
-    {
-        return $this->endpoint . 'access_token';
-    }
-
-    public function getUserInfo()
-    {
-    }
 }

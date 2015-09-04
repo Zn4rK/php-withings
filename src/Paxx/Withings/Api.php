@@ -2,14 +2,14 @@
 
 namespace Paxx\Withings;
 
-use Guzzle\Http\Client as GuzzleClient;
+use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Subscriber\Oauth\Oauth1;
 use Paxx\Withings\Exception\ApiException;
 use Paxx\Withings\Exception\WbsException;
-use Paxx\Withings\Oauth\OauthPlugin;
 
 class Api
 {
-    const ENDPOINT = 'http://wbsapi.withings.net';
+    const ENDPOINT = 'http://wbsapi.withings.net/';
 
     private $consumer_key;
     private $consumer_secret;
@@ -18,6 +18,7 @@ class Api
     private $user_id;
 
     private $client;
+    private $oauth;
 
     private $required_params = array(
         'consumer_key',
@@ -51,11 +52,17 @@ class Api
             'consumer_key'    => $this->consumer_key,
             'consumer_secret' => $this->consumer_secret,
             'token'           => $this->access_token,
-            'token_secret'    => $this->token_secret
+            'token_secret'    => $this->token_secret,
+            'request_method'  => 'query'
         );
 
-        $this->client = new GuzzleClient(self::ENDPOINT);
-        $this->client->addSubscriber(new OauthPlugin($config));
+        $this->client = new GuzzleClient([
+            'base_url' => static::ENDPOINT,
+            'defaults' => ['auth' => 'oauth']
+        ]);
+
+        $this->oauth = new Oauth1($config);
+        $this->client->getEmitter()->attach($this->oauth);
     }
 
     /**
@@ -106,7 +113,7 @@ class Api
         }
 
         // Build a request
-        $request = $this->client->get($path);
+        $request = $this->client->createRequest('GET', $path, ['auth' => 'oauth']);
 
         // Params will almost never be empty, but we'll do it like this;
         $query = $request->getQuery();
@@ -116,7 +123,7 @@ class Api
         }
 
         // Decode the response
-        $response = json_decode($request->send()->getBody(true), true);
+        $response = json_decode($this->client->send($request)->getBody(true), true);
 
         if ($response['status'] !== 0) {
             if (isset($this->errors[$response['status']])) {
