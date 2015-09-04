@@ -1,6 +1,5 @@
 <?php
-
-include '../vendor/autoload.php';
+require_once '../vendor/autoload.php';
 
 use Paxx\Withings\Api as WithingsApi;
 use Paxx\Withings\Provider\Withings as WithingsAuth;
@@ -8,34 +7,41 @@ use Paxx\Withings\Provider\Withings as WithingsAuth;
 session_start();
 
 $config = array(
-    'consumer_key'    => 'your-key',
-    'consumer_secret' => 'your-secret',
-    'redirect_url'    => 'http://your-callback.tld/',
+    'identifier' => 'your-key',
+    'secret' => 'your-secret',
+    'callback_uri' => 'http://your-callback.tld'
 );
 
-$oauth = new WithingsAuth($config);
+$server = new WithingsAuth($config);
 
-if ($oauth->isCallback()) {
-    $oauth->validateCallback($_SESSION['token']);
+if (isset($_GET['oauth_token'])) {
+    // Step 2
 
-    // You can save these for permanent usage
-    $tokens = $oauth->getUserTokens();
+    // Retrieve the temporary credentials from step 2
+    $temporaryCredentials = unserialize($_SESSION['temporary_credentials']);
+
+    // Retrieve token credentials - you can save these for permanent usage
+    $tokenCredentials = $server->getTokenCredentials($temporaryCredentials, $_GET['oauth_token'], $_GET['oauth_verifier']);
+
+    // Also save the userId
+    $userId = $_GET['userid'];
 } else {
-    $token = $oauth->requestToken();
+    // Step 1
 
-    // You can use any (temporary) storage you want
-    $_SESSION['token'] = $token;
+    // These identify you as a client to the server.
+    $temporaryCredentials = $server->getTemporaryCredentials();
 
-    $url = $oauth->authorize($token);
+    // Store the credentials in the session.
+    $_SESSION['temporary_credentials'] = serialize($temporaryCredentials);
 
-    header("Location: {$url}");
-    exit;
+    // Redirect the resource owner to the login screen on Withings.
+    $server->authorize($temporaryCredentials);
 }
 
 $config = $config + array(
-    'access_token' => $tokens->access_token,
-    'token_secret' => $tokens->secret,
-    'user_id'      => $tokens->uid
+    'access_token' => $tokenCredentials->getIdentifier(),
+    'token_secret' => $tokenCredentials->getSecret(),
+    'user_id'      => $userId
 );
 
 $api = new WithingsApi($config);
