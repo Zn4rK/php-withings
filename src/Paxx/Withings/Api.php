@@ -11,8 +11,8 @@ class Api
 {
     const ENDPOINT = 'http://wbsapi.withings.net/';
 
-    private $consumer_key;
-    private $consumer_secret;
+    private $identifier;
+    private $secret;
     private $access_token;
     private $token_secret;
     private $user_id;
@@ -21,8 +21,8 @@ class Api
     private $oauth;
 
     private $required_params = array(
-        'consumer_key',
-        'consumer_secret',
+        'identifier',
+        'secret',
         'access_token',
         'token_secret',
         'user_id'
@@ -49,8 +49,8 @@ class Api
         $this->hydrateParams($params);
 
         $config = array(
-            'consumer_key'    => $this->consumer_key,
-            'consumer_secret' => $this->consumer_secret,
+            'consumer_key'    => $this->identifier,
+            'consumer_secret' => $this->secret,
             'token'           => $this->access_token,
             'token_secret'    => $this->token_secret,
             'request_method'  => 'query'
