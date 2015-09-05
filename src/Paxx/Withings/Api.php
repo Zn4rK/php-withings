@@ -2,7 +2,8 @@
 
 namespace Paxx\Withings;
 
-use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Client;
+use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Subscriber\Oauth\Oauth1;
 use Paxx\Withings\Exception\ApiException;
 use Paxx\Withings\Exception\WbsException;
@@ -18,7 +19,6 @@ class Api
     private $user_id;
 
     private $client;
-    private $oauth;
 
     private $required_params = array(
         'identifier',
@@ -56,13 +56,16 @@ class Api
             'request_method'  => 'query'
         );
 
-        $this->client = new GuzzleClient([
-            'base_url' => static::ENDPOINT,
-            'defaults' => ['auth' => 'oauth']
-        ]);
+        // Create a stack so we can add the oauth-subscriber
+        $stack = HandlerStack::create();
 
-        $this->oauth = new Oauth1($config);
-        $this->client->getEmitter()->attach($this->oauth);
+        $stack->push(new Oauth1($config));
+
+        $this->client = new Client([
+            'base_uri' => static::ENDPOINT,
+            'handler'  => $stack,
+            'auth'     => 'oauth'
+        ]);
     }
 
     /**
@@ -108,22 +111,15 @@ class Api
     {
         $params['userid'] = $this->user_id;
 
-        if (! empty($action)) {
+        if (!empty($action)) {
             $params['action'] = $action;
         }
 
         // Build a request
-        $request = $this->client->createRequest('GET', $path, ['auth' => 'oauth']);
-
-        // Params will almost never be empty, but we'll do it like this;
-        $query = $request->getQuery();
-
-        foreach ($params as $key => $val) {
-            $query->set($key, $val);
-        }
+        $request = $this->client->get($path, array('query' => $params));
 
         // Decode the response
-        $response = json_decode($this->client->send($request)->getBody(true), true);
+        $response = json_decode($request->getBody()->getContents(), true);
 
         if ($response['status'] !== 0) {
             if (isset($this->errors[$response['status']])) {
