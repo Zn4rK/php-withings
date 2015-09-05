@@ -9,60 +9,67 @@ use League\OAuth1\Client\Credentials\TemporaryCredentials;
 
 class Withings extends Server
 {
-    public $endpoint = 'https://oauth.withings.com';
+    private $urlUserDetails = '';
 
     /**
-     * Get the URL for retrieving temporary credentials.
-     *
-     * @return string
+     * {@inheritDoc}
      */
     public function urlTemporaryCredentials()
     {
-        return $this->endpoint . '/account/request_token';
+        return 'https://oauth.withings.com/account/request_token';
     }
 
     /**
-     * Get the URL for redirecting the resource owner to authorize the client.
-     *
-     * @return string
+     * {@inheritDoc}
      */
     public function urlAuthorization()
     {
-        return $this->endpoint . '/account/authorize';
+        return 'https://oauth.withings.com/account/authorize';
     }
 
     /**
-     * Get the URL retrieving token credentials.
-     *
-     * @return string
+     * {@inheritDoc}
      */
     public function urlTokenCredentials()
     {
-        return $this->endpoint . '/account/access_token';
+        return 'https://oauth.withings.com/account/access_token';
     }
 
     /**
-     * Get the URL for retrieving user details.
-     *
-     * @return string
+     * {@inheritDoc}
      */
     public function urlUserDetails()
     {
-        return $this->endpoint . '/user';
+        return $this->urlUserDetails;
     }
 
     /**
-     * Take the decoded data from the user details URL and convert
-     * it to a User object.
-     *
-     * @param mixed            $data
-     * @param TokenCredentials $tokenCredentials
-     *
-     * @return User
+     * {@inheritDoc}
      */
     public function userDetails($data, TokenCredentials $tokenCredentials)
     {
-        // TODO: Implement userDetails() method.
+        if(isset($data['body']['users'][0])) {
+            $data = $data['body']['users'][0];
+        }
+
+        $user = new User();
+
+        $user->uid       = $data['id'];
+        $user->nickname  = null;
+        $user->name      = $data['firstname'] . ' ' . $data['lastname'];
+        $user->firstName = $data['firstname'];
+        $user->lastName  = $data['lastname'];
+
+        // Save all extra data
+        $user->extra = array(
+            'gender'    => $data['gender'],
+            'fatmethod' => $data['fatmethod'],
+            'birthdate' => $data['birthdate'],
+            'shortname' => $data['shortname'],
+            'ispublic'  => $data['ispublic']
+        );
+
+        return $user;
     }
 
     /**
@@ -76,43 +83,35 @@ class Withings extends Server
      */
     public function userUid($data, TokenCredentials $tokenCredentials)
     {
-        // TODO: Implement userUid() method.
+        if(isset($data['body']['users'][0])) {
+            $data = $data['body']['users'][0];
+        }
+
+        return $data['id'];
     }
 
     /**
-     * Take the decoded data from the user details URL and extract
-     * the user's email.
-     *
-     * @param mixed            $data
-     * @param TokenCredentials $tokenCredentials
-     *
-     * @return string
+     * {@inheritDoc}
      */
     public function userEmail($data, TokenCredentials $tokenCredentials)
     {
-        // TODO: Implement userEmail() method.
+        return;
     }
 
     /**
-     * Take the decoded data from the user details URL and extract
-     * the user's screen name.
-     *
-     * @param mixed            $data
-     * @param TokenCredentials $tokenCredentials
-     *
-     * @return string
+     * {@inheritDoc}
      */
     public function userScreenName($data, TokenCredentials $tokenCredentials)
     {
-        // TODO: Implement userScreenName() method.
+        return;
     }
 
     /**
      * Creates temporary credentials from the body response.
      *
      * @param string $body
-     *
      * @return TemporaryCredentials
+     * @throws CredentialsException
      */
     protected function createTemporaryCredentials($body)
     {
@@ -127,6 +126,61 @@ class Withings extends Server
         $temporaryCredentials->setSecret($data['oauth_token_secret']);
 
         return $temporaryCredentials;
+    }
+
+    /**
+     * Since Withings has their own unique implementation of oAuth, we need to override
+     * the fetchUserDetails-method and add the oauth headers as querystrings.
+     *
+     * {@inheritDoc}
+     */
+    protected function fetchUserDetails(TokenCredentials $tokenCredentials, $force=true) {
+        if (!$this->cachedUserDetailsResponse || $force) {
+
+            // The user-endpoint
+            $endpoint = 'http://wbsapi.withings.net/user';
+
+            // Parse the parameters
+            $parameters = $this->getOauthParameters($endpoint, $tokenCredentials, array(
+                'action' => 'getbyuserid'
+            ));
+
+            // Set the urlUserDetails so the parent method can call it via $this->urlUserDetails();
+            $this->urlUserDetails = $endpoint . '?' . http_build_query($parameters);
+        }
+
+        // Call the parent when we're done
+        return parent::fetchUserDetails($tokenCredentials, $force);
+    }
+
+    /**
+     * Since Withings has their own unique implementation of oAuth1 we need to extract the oAuthParameters
+     * and append them to the endpoint as a querystring.
+     *
+     * This is an extraction of $this->protocolHeader()
+     *
+     * :(
+     *
+     * @param $url
+     * @param TokenCredentials $tokenCredentials
+     * @param array $extraParams
+     * @return array
+     */
+    private function getOauthParameters($url, TokenCredentials $tokenCredentials, $extraParams = array()) {
+        $parameters = array_merge(
+            $this->baseProtocolParameters(),
+            $this->additionalProtocolParameters(),
+            $extraParams,
+            array(
+                'oauth_token' => $tokenCredentials->getIdentifier(),
+            )
+        );
+
+        $this->signature->setCredentials($tokenCredentials);
+
+        $parameters['oauth_signature'] = $this->signature->sign($url, $parameters, 'GET');
+
+        return $parameters;
     }
 
 }
