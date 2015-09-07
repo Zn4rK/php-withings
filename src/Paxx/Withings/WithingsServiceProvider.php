@@ -26,7 +26,7 @@ class WithingsServiceProvider extends ServiceProvider
         $loader = AliasLoader::getInstance();
 
         $loader->alias('WithingsApi', 'Paxx\Withings\Api');
-        $loader->alias('WithingsAuth', 'Paxx\Withings\Provider\Withings');
+        $loader->alias('WithingsAuth', 'Paxx\Withings\Server\Withings');
     }
 
     /**
