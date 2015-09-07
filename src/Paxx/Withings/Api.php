@@ -33,7 +33,7 @@ class Api
         247  => 'The user_id provided is absent, or incorrect',
         250  => 'The provided user_id and/or Oauth credentials do not match',
         286  => 'No such subscription was found',
-        293  => 'The callback URL is either absent or incorrect',
+        293  => 'The callback URL is either absent or incorrect (Note: Withings only sends notifications to valid post-requests)',
         294  => 'No such subscription could be deleted',
         304  => 'The comment is either absent or incorrect',
         305  => 'Too many notifications are already set',
@@ -138,6 +138,10 @@ class Api
         return true;
     }
 
+    /**
+     * @return Entity\User
+     * @throws WbsException
+     */
     public function getUser()
     {
         $user = $this->request('user', 'getbyuserid');
@@ -145,58 +149,62 @@ class Api
         // Pluck single record
         $user = end($user['users']);
 
-        return new Collection\User($user);
+        return new Entity\User($this, $user);
     }
 
     /**
      * Get user's activity
      *
-     * @param array $params        Array of params. Requires 'date' OR 'startdateymd' and 'enddateymd', all formatted YYYY-mm-dd
-     * @return Collection\Activity
-     * @throws ApiException        If a valid set of data parameters isn't sent along
-     * @throws WbsException        If an error is returned from the API
+     * Omit both parameters to get all
+     *
+     * @param string $start
+     * @param string $end
+     * @return Collection\ActivityCollection
+     * @throws WbsException
      */
-    public function getActivity(array $params = array())
+    public function getActivity($start='', $end='')
     {
-        // Check date is present and not empty
-        if (isset($params['date'])) {
-            if (! empty($params['date'])) {
-                $activity = $this->request('v2/measure', 'getactivity', ['date' => $params['date']]);
-            } else {
-                throw new ApiException('Parameter "date" can\'t be empty');
-            }
-        }
-        // If we don't get a date but a range
-        elseif (isset($params['startdateymd']) && ! empty($params['startdateymd'])) {
-            // Making sure there's an end date
-            if (! isset($params['enddateymd'])) {
-                throw new ApiException('You need to enter a start and end date.');
-            } else {
-                $activity = $this->request('v2/measure', 'getactivity', ['startdateymd' => $params['startdateymd'], 'enddateymd' => $params['enddateymd']]);
-            }
-        }
-        // If we don't get any parameters sent
-        else {
-            throw new ApiException('You need to pass either a date or a range of dates.');
+        $params = array();
+
+        // Check if we have a single day
+        if(!empty($start) && empty($end)) {
+            $params['date'] = $start;
+        // Or if we have a range
+        } elseif(!empty($start) && !empty($end)) {
+            $params['startdateymd'] = $start;
+            $params['enddateymd'] = $end;
         }
 
-        return new Collection\Activity($activity);
+        $activity = $this->request('v2/measure', 'getactivity', $params);
+
+        return new Collection\ActivityCollection($activity);
     }
 
     /**
      * Get user's measurements
      *
      * @param array $params
-     * @return Collection\Measure
+     * @return Collection\MeasureCollection
      * @throws WbsException       If an error is returned from the API
      */
     public function getMeasures(array $params = array())
     {
         $measure = $this->request('measure', 'getmeas', $params);
-
-        return new Collection\Measure($measure);
+        return new Collection\MeasureCollection($measure);
     }
 
+    /**
+     * Note: From Withings API FAQ:
+     * Make sure you specify the right Appli parameters when creating your subscriptions
+     * We test your callback URL when you subscribe for notifications. It must be reachable for POST requests, otherwise the subscription will fail.
+     *
+     * @param string $callback
+     * @param string $comment
+     * @param int $appli
+     * @return bool
+     * @throws ApiException
+     * @throws WbsException
+     */
     public function subscribe($callback = '', $comment = '', $appli = 1)
     {
         if (empty($callback)) {
@@ -218,6 +226,13 @@ class Api
         return $subscribe;
     }
 
+    /**
+     * @param string $callback
+     * @param int $appli
+     * @return bool
+     * @throws ApiException
+     * @throws WbsException
+     */
     public function unsubscribe($callback = '', $appli = 1)
     {
         if (empty($callback)) {
@@ -234,12 +249,24 @@ class Api
         return $unsubscribe;
     }
 
+    /**
+     * @param int $appli
+     * @return Collection\SubscriptionCollection
+     * @throws WbsException
+     */
     public function listSubscriptions($appli = 1)
     {
         $list = $this->request('notify', 'list', array('appli' => $appli));
-        return new Collection\SubscriptionList($list);
+        return new Collection\SubscriptionCollection($list);
     }
 
+    /**
+     * @param string $callback
+     * @param int $appli
+     * @return Entity\Subscription
+     * @throws ApiException
+     * @throws WbsException
+     */
     public function isSubscribed($callback = '', $appli = 1)
     {
         if (empty($callback)) {
@@ -252,6 +279,6 @@ class Api
         );
 
         $isSubscribed = $this->request('notify', 'get', $params);
-        return new Collection\Subscription($isSubscribed);
+        return new Entity\Subscription($isSubscribed);
     }
 }

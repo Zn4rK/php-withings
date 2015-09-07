@@ -47,4 +47,15 @@ $config = $config + array(
 $api = new WithingsApi($config);
 $user = $api->getUser();
 
-echo '<pre>' . print_r($user, true) . '</pre>';
+echo 'Hello ' . $user->getFirstName() . '!<br>';
+echo 'Here are your measures: <hr>';
+
+/**
+ * @var \Paxx\Withings\Entity\Measure $measure
+ */
+foreach($user->getMeasures() as $measure) {
+    echo $measure->getCreatedAt() . ': <br>';
+    echo 'In metric: ' . $measure->getWeight() . ' kg<br>';
+    echo 'In imperial: ' . $measure->imperial()->getWeight() . ' lbs';
+    echo '<hr>';
+}

@@ -5,7 +5,7 @@ namespace Paxx\Withings\Entity;
 use Carbon\Carbon;
 use Paxx\Withings\Api;
 
-class User extends Entity
+class User
 {
     /**
      * @var Integer
@@ -50,7 +50,7 @@ class User extends Entity
     /**
      * @param Api
      */
-    protected $api;
+    private $api;
 
     /**
      * @param Api $api
@@ -73,70 +73,112 @@ class User extends Entity
     }
 
     /**
+     * Get Withings User id
+     *
      * @return int
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
     /**
+     * Get the first name
+     *
      * @return String
      */
-    public function getFirstName() {
+    public function getFirstName()
+    {
         return $this->firstName;
     }
 
     /**
+     * Get the last name
+     *
      * @return String
      */
-    public function getLastName() {
+    public function getLastName()
+    {
         return $this->lastName;
     }
 
     /**
+     * Get the short name
+     *
      * @return String
      */
-    public function getShortName() {
+    public function getShortName()
+    {
         return $this->shortName;
     }
 
     /**
+     * Get the gender
+     *
      * @return string
      */
-    public function getGender() {
+    public function getGender()
+    {
         return $this->gender == 0 ? 'male' : 'female';
     }
 
     /**
+     * Get the raw gender (0 for male, and 1 for female)
+     *
      * @return int
      */
-    public function getGenderRaw() {
+    public function getGenderRaw()
+    {
         return $this->gender;
     }
 
     /**
+     * Get the fat method
+     *
      * @return int
      */
-    public function getFatMethod() {
+    public function getFatMethod()
+    {
         return $this->fatMethod;
     }
 
     /**
+     * Get the birthdate
+     *
      * @return Carbon
      */
-    public function getBirthDate() {
+    public function getBirthDate()
+    {
         return $this->birthDate;
     }
 
     /**
+     * Is this user public or not
+     *
      * @return bool
      */
-    public function isPublic() {
+    public function isPublic()
+    {
         return $this->isPublic;
     }
 
-    public function getMeasures() {
-        return $this->api->getMeasures(array('user_id' => $this->id));
+    /**
+     * Shortcut to the API for measures
+     *
+     * @return \Paxx\Withings\Collection\MeasureCollection
+     */
+    public function getMeasures()
+    {
+        return $this->api->getMeasures();
     }
 
+    /**
+     * Shortcut to the API for activites
+     *
+     * @return Activity
+     */
+    public function getActivites()
+    {
+        return $this->api->getActivity();
+    }
 }
