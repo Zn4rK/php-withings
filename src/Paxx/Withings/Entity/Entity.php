@@ -1,11 +1,5 @@
 <?php namespace Paxx\Withings\Entity;
-/**
- * Collection of key/value pairs
- *
- * Note: This is essentially a stdClass object; two parameters with the same key will be overwritten.
- *
- * @package Paxx\Withings\Entity
- */
+
 abstract class Entity
 {
     protected $imperial = false;
