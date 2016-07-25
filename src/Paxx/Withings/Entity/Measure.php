@@ -18,7 +18,10 @@ class Measure extends Entity
         9  => 'diastolicBloodPressure',
         10 => 'systolicBloodPressure',
         11 => 'heartPulse',
-        54 => 'sp02'
+        54 => 'sp02',
+        76 => 'muscleMass',
+        77 => 'hydration',
+        88 => 'boneMass'
     );
 
     /**
@@ -270,5 +273,43 @@ class Measure extends Entity
     {
         return $this->category;
     }
+    /**
+     * bone ratio
+     *
+     * @return float
+     */
+    public function getBoneRatio()
+    {
+        return $this->convert($this->boneMass, 'kg')/$this->convert($this->weight, 'kg')*100;
+    }
 
+    /**
+     * fat free ratio
+     *
+     * @return float
+     */
+    public function getFatFreeRatio()
+    {
+        return $this->convert($this->fatFreeMass, 'kg')/$this->convert($this->weight, 'kg')*100;
+    }
+
+    /**
+     * muscle ratio
+     *
+     * @return float
+     */
+    public function getMuscleRatio()
+    {
+        return $this->convert($this->muscleMass, 'kg')/$this->convert($this->weight, 'kg')*100;
+    }
+
+    /**
+     * hydration ratio
+     *
+     * @return float
+     */
+    public function getHydrationRatio()
+    {
+        return $this->convert($this->hydration, 'kg')/$this->convert($this->weight, 'kg')*100;
+    }
 }
