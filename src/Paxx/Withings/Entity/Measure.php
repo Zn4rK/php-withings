@@ -75,6 +75,21 @@ class Measure extends Entity
     /**
      * @var float
      */
+    protected $hydration;
+
+    /**
+     * @var float
+     */
+    protected $muscleMass;
+
+    /**
+     * @var float
+     */
+    protected $boneMass;
+
+    /**
+     * @var float
+     */
     protected $fatMassWeight;
 
     /**
@@ -310,6 +325,7 @@ class Measure extends Entity
      */
     public function getHydrationRatio()
     {
-        return $this->convert($this->hydration, 'kg')/$this->convert($this->weight, 'kg')*100;
+        //return $this->convert($this->hydration, 'kg')/$this->convert($this->weight, 'kg')*100;
+        return $this->hydration;
     }
 }
