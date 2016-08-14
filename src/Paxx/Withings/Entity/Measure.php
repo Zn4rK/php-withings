@@ -325,7 +325,6 @@ class Measure extends Entity
      */
     public function getHydrationRatio()
     {
-        //return $this->convert($this->hydration, 'kg')/$this->convert($this->weight, 'kg')*100;
-        return $this->hydration;
+        return $this->convert($this->hydration, 'kg')/$this->convert($this->weight, 'kg')*100;
     }
 }
