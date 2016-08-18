@@ -75,6 +75,21 @@ class Measure extends Entity
     /**
      * @var float
      */
+    protected $hydration;
+
+    /**
+     * @var float
+     */
+    protected $muscleMass;
+
+    /**
+     * @var float
+     */
+    protected $boneMass;
+
+    /**
+     * @var float
+     */
     protected $fatMassWeight;
 
     /**
