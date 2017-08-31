@@ -2,12 +2,12 @@
 
 namespace Paxx\Withings\Entity;
 
-use Carbon\Carbon;
 use Paxx\Withings\Collection\MeasureCollection;
-use Paxx\Withings\Entity\MeasureGroupAttrib;
+use Carbon\Carbon;
+use Paxx\Withings\Entity\MeasureAttrib;
 use Paxx\Withings\Entity\MeasureGroupCategory;
 
-class MeasureGroup
+class MeasureGroup extends MeasureCollection
 {
     /**
      * @doc https://developer.health.nokia.com/api/doc#api-Measure-get_measure
@@ -43,12 +43,12 @@ class MeasureGroup
     public $createdAt;
     
     /**
-     * @var Integer
+     * @var MeasureGroupAttrib
      */
     public $attrib;
 
     /**
-     * @var Integer
+     * @var MeasureGroupCategory
      */
     public $category;
 
@@ -61,48 +61,31 @@ class MeasureGroup
         //$this->raw = $params;
         $this->groupId = $params['grpid'];
         $this->createdAt = Carbon::createFromTimestamp($params['date'], $timezone);
-        $this->attrib = new MeasureGroupAttrib($params['attrib']);
+        $this->attrib = new MeasureAttrib($params['attrib']);
         $this->category = new MeasureGroupCategory($params['category']);
 
-        $this->measures = new MeasureCollection(
+        //$this->measures = new MeasureCollection(
+        parent::__construct(
             $params['measures'],
             function ($entryKey, $entryValue) {
-                if (array_key_exists($entryValue['type'], self::$measuresMap)) {
+                if (array_key_exists($entryValue['type'], self::$measuresMap))
+                {
+                    $measureEntry = self::$measuresMap[$entryValue['type']];
                     return [
-                        'code' => self::$measuresMap[$entryValue['type']]['code'],
+                        'code'  => $measureEntry['code'],
                         'value' => $entryValue['value'] * pow(10, $entryValue['unit']),
-                        'unit' => self::$measuresMap[$entryValue['type']]['unit'],
+                        'unit'  => $measureEntry['unit'],
                         'extra' => [ 'id' => $entryValue['type'] ],
                     ];
                 }
             }
         );
     }
-    
-    /**
-     * List eh available measures
-     *
-     * @return Array
-     */
-    public function getMeasureList()
-    {
-        return $this->measures->keys();
-    }
-    
-    /**
-     * Retreive a measure by it's code
-     *
-     * @return Measure
-     */
-    public function __get($name)
-    {
-        return $this->measures->get($name);
-    }
 
     /**
      * bone ratio
      *
-     * @return float
+     * @return Measure
      */
     public function getBoneRatio()
     {
@@ -112,7 +95,7 @@ class MeasureGroup
     /**
      * fat free ratio
      *
-     * @return float
+     * @return Measure
      */
     public function getFatFreeRatio()
     {
@@ -122,7 +105,7 @@ class MeasureGroup
     /**
      * muscle ratio
      *
-     * @return float
+     * @return Measure
      */
     public function getMuscleRatio()
     {
@@ -132,7 +115,7 @@ class MeasureGroup
     /**
      * hydration ratio
      *
-     * @return float
+     * @return Measure
      */
     public function getHydrationRatio()
     {

@@ -8,24 +8,23 @@ use Paxx\Withings\Entity\Activity;
 class ActivityCollection extends Collection {
 
     public function __construct(array $params = array()) {
-        $items = array();
-
+        parent::__construct();
+        
         if(isset($params['activities']))
         {
-            foreach($params['activities'] as &$activity)
+            foreach($params['activities'] as $activity)
             {
                 $activity = new Activity($activity);
+                $this->put($activity->createdAt, $activity);
             }
-
-            $items = $params['activities'];
         }
         else
         {
             // We only have one item
-            $items[] = $params;
+            $activity = new Activity($params);
+            $this->put($activity->createdAt, $activity);
         }
-
-        parent::__construct($items);
+        
         unset($params);
     }
 }

@@ -25,4 +25,24 @@ class MeasureCollection extends Collection
             }
         }
     }
+    
+    /**
+     * List available measures
+     *
+     * @return Array
+     */
+    public function getAvailableMeasures()
+    {
+        return $this->keys();
+    }
+    
+    /**
+     * Retreive a measure by it's code ; $activity->getSteps() for example
+     *
+     * @return Measure
+     */
+    public function __get($name)
+    {
+        return $this->get($name);
+    }
 }

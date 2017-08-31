@@ -2,7 +2,7 @@
 
 namespace Paxx\Withings\Entity;
 
-class MeasureGroupAttrib
+class MeasureAttrib
 {
     public static $attribMap = array(
         0 => [

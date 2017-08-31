@@ -14,6 +14,9 @@ class MeasureGroupCategory
         2 => 'Target',  // User objectives
     );
     
+    public $id;
+    public $name;
+    
     public function __construct($categoryId)
     {
         $this->id = $categoryId;
@@ -49,4 +52,5 @@ class MeasureGroupCategory
     {
         return $this->name;
     }
+    
 }

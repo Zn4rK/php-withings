@@ -192,6 +192,58 @@ class Api
         $measure = $this->request('measure', 'getmeas', $params);
         return new Collection\MeasureGroupCollection($measure);
     }
+    
+    /**
+     * Get user's intraday activity
+     *
+     * @param array $params
+     * @return Collection\IntradayActivityCollection
+     * @throws WbsException       If an error is returned from the API
+     */
+    public function getIntradayActivity(array $params = array())
+    {
+        $intradayActivity = $this->request('measure', 'getintradayactivity', $params);
+        return new Collection\IntradayActivityCollection($intradayActivity);
+    }
+    
+    /**
+     * Get user's measurements
+     *
+     * @param array $params
+     * @return Collection\MeasureCollection
+     * @throws WbsException       If an error is returned from the API
+     */
+    public function getSleep(array $params = array())
+    {
+        $measure = $this->request('sleep', 'get', $params);
+        return new Collection\SleepStateCollection($measure);
+    }
+    
+    /**
+     * Get user's measurements
+     *
+     * @param array $params
+     * @return Collection\MeasureCollection
+     * @throws WbsException       If an error is returned from the API
+     */
+    public function getSleepSummary(array $params = array())
+    {
+        $measure = $this->request('sleep', 'getsummary', $params);
+        return new Collection\SleepCollection($measure);
+    }
+    
+    /**
+     * Get user's measurements
+     *
+     * @param array $params
+     * @return Collection\MeasureCollection
+     * @throws WbsException       If an error is returned from the API
+     */
+    public function getWorkouts(array $params = array())
+    {
+        $measure = $this->request('measure', 'getworkouts', $params);
+        return new Collection\WorkoutCollection($measure);
+    }
 
     /**
      * Note: From Withings API FAQ:
