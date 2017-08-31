@@ -1,4 +1,6 @@
-<?php namespace Paxx\Withings\Collection;
+<?php
+
+namespace Paxx\Withings\Collection;
 
 use Illuminate\Support\Collection;
 use Carbon\Carbon;
@@ -12,7 +14,7 @@ class MeasureGroupCollection extends Collection {
     public $updatedAt;
 
     public function __construct(array $params = array()) {
-        $this->raw = $params;
+        //$this->raw = $params;
         $this->updatedAt = Carbon::createFromTimestamp($params['updatetime'], $params['timezone']);
         
         parent::__construct();

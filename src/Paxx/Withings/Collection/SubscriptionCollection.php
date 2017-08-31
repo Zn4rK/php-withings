@@ -1,4 +1,6 @@
-<?php namespace Paxx\Withings\Collection;
+<?php
+
+namespace Paxx\Withings\Collection;
 
 use Illuminate\Support\Collection as Collection;
 use Paxx\Withings\Entity\Subscription;

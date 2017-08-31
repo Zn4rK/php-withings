@@ -58,7 +58,7 @@ class MeasureGroup
      */
     public function __construct(array $params = array(), string $timezone)
     {
-        $this->raw = $params;
+        //$this->raw = $params;
         $this->groupId = $params['grpid'];
         $this->createdAt = Carbon::createFromTimestamp($params['date'], $timezone);
         $this->attrib = new MeasureGroupAttrib($params['attrib']);

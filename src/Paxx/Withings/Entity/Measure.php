@@ -1,4 +1,6 @@
-<?php namespace Paxx\Withings\Entity;
+<?php
+
+namespace Paxx\Withings\Entity;
 
 class Measure
 {

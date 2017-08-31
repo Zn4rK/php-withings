@@ -1,4 +1,6 @@
-<?php namespace Paxx\Withings\Collection;
+<?php
+
+namespace Paxx\Withings\Collection;
 
 use Illuminate\Support\Collection;
 use Carbon\Carbon;
@@ -14,11 +16,11 @@ class MeasureCollection extends Collection
     {
         parent::__construct();
         foreach ($entries as $entryKey => $entryValue) {
-            $convertedEntry = $entryToMeasureCallback($entryKey, $entryValue);
-            if ($convertedEntry)
+            $formattedEntry = $entryToMeasureCallback($entryKey, $entryValue);
+            if ($formattedEntry)
             {
-                $this->put($convertedEntry['code'], Measure::fromArray(
-                    $convertedEntry
+                $this->put($formattedEntry['code'], Measure::fromArray(
+                    $formattedEntry
                 ));
             }
         }

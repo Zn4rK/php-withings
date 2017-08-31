@@ -1,4 +1,6 @@
-<?php namespace Paxx\Withings\Entity;
+<?php
+
+namespace Paxx\Withings\Entity;
 
 use Carbon\Carbon;
 use Measure;
@@ -32,7 +34,8 @@ class Activity
         $this->measures  = new MeasureCollection(
             $params, 
             function ($entryKey, $entryValue) {
-               if (array_key_exists($entryKey, self::$measuresMap)) {
+               if (array_key_exists($entryKey, self::$measuresMap))
+               {
                     return [
                         'code'  => self::$measuresMap[$entryKey]['code'],
                         'value' => $entryValue,
