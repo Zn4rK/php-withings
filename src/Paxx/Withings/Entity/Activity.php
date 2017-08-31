@@ -1,133 +1,71 @@
 <?php namespace Paxx\Withings\Entity;
 
 use Carbon\Carbon;
+use Measure;
 
-class Activity extends Entity
+class Activity
 {
     /**
      * @var Carbon
      */
-    protected $createdAt;
+    public $createdAt;
 
     /**
-     * @var Integer
+     * @var Measure
      */
-    protected $steps;
+    public $steps;
 
     /**
-     * @var float
+     * @var Measure
      */
-    protected $distance;
+    public $distance;
 
     /**
-     * @var float
+     * @var Measure
      */
-    protected $calories;
+    public $calories;
 
     /**
-     * @var float
+     * @var Measure
      */
-    protected $elevation;
+    public $elevation;
 
     /**
-     * @var integer
+     * @var Measure
      */
-    protected $soft;
+    public $soft;
 
     /**
-     * @var integer
+     * @var Measure
      */
-    protected $moderate;
+    public $moderate;
 
     /**
-     * @var integer
+     * @var Measure
      */
-    protected $intense;
+    public $intense;
 
+    /*public static $unitMap = array(
+        [ 'code' => 'steps'
+        'distance',  'm');
+        'calories',  'kcal');
+        'elevation', 'm');
+        'soft',      's');
+        'moderate',  's');
+        'intense',   's'
+    )*/
     public function __construct(array $params = array())
     {
         $this->createdAt = Carbon::createFromFormat('Y-m-d', $params['date'], $params['timezone']);
-        $this->steps = $params['steps'];
-        $this->distance = $params['distance'];
-        $this->calories = $params['calories'];
-        $this->elevation = $params['elevation'];
-        $this->soft = $params['soft'];
-        $this->moderate = $params['moderate'];
-        $this->intense = $params['intense'];
-    }
-
-    /**
-     * @return Carbon
-     */
-    public function getCreatedAt() {
-        return $this->createdAt;
-    }
-
-    /**
-     * Number of steps for the day.
-     *
-     * @return int
-     */
-    public function getSteps() {
-        return $this->steps;
-    }
-
-    /**
-     * Distance travelled for the day (in meters)
-     *
-     * Imperial conversion via $this->imperial()->getDistance()
-     *
-     * @return float
-     */
-    public function getDistance() {
-        return $this->convert($this->distance, 'm');
-    }
-
-    /**
-     * Active Calories burned in the day (in kcal).
-     *
-     * @return float
-     */
-    public function getCalories() {
-        return $this->calories;
-    }
-
-    /**
-     * Elevation climbed during the day (in meters)
-     *
-     * Imperial conversion via $this->imperial()->getElevation()
-     *
-     * @return float
-     */
-    public function getElevation() {
-        return $this->convert($this->elevation, 'm');
-    }
-
-    /**
-     * Duration of soft activities (in seconds).
-     *
-     * @return int
-     */
-    public function getSoft() {
-        return $this->soft;
-    }
-
-    /**
-     * Duration of moderate activities (in seconds).
-     *
-     * @return int
-     */
-    public function getModerate() {
-        return $this->moderate;
-    }
-
-    /**
-     * Duration of intense activities (in seconds).
-     *
-     * @return int
-     */
-    public function getIntense() {
-        return $this->intense;
+        //$this->measures  = new MeasureCollection($unitMap, $key, $value, $mult)
+        // @doc https://developer.health.nokia.com/api/doc#api-Measure-get_activity
+        $this->steps        = new Measure($params['steps']);
+        $this->distance     = new Measure($params['distance'],  'm');
+        $this->calories     = new Measure($params['calories'],  'kcal');
+        $this->elevation    = new Measure($params['elevation'], 'm');
+        $this->soft         = new Measure($params['soft'],      's');
+        $this->moderate     = new Measure($params['moderate'],  's');
+        $this->intense      = new Measure($params['intense'],   's');
     }
 
 }

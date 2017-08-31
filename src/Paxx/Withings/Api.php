@@ -190,7 +190,7 @@ class Api
     public function getMeasures(array $params = array())
     {
         $measure = $this->request('measure', 'getmeas', $params);
-        return new Collection\MeasureCollection($measure);
+        return new Collection\MeasureGroupCollection($measure);
     }
 
     /**
