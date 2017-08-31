@@ -15,8 +15,10 @@
         "league/oauth1-client": "~1.0",
         "illuminate/support": "~5.0",
         "guzzlehttp/guzzle": "~6.0",
-        "guzzlehttp/oauth-subscriber": "~0.3",
-        "laravel/socialite": "^2.0"
+        "guzzlehttp/oauth-subscriber": "~0.3"
+    },
+    "suggest": {
+        "socialiteproviders/withings": "Integrates nicely with SocialiteProviders for Laravel"
     },
     "autoload": {
         "psr-4": {
