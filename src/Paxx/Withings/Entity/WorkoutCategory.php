@@ -58,6 +58,14 @@ class WorkoutCategory
         196 => [ 'code' => 'IceSkating',    'name' => 'IceSkating' ],
     );
     
+    public static function mapNotFound($key)
+    {
+        return [
+            'code' => '_unk'.key,
+            'name' => 'Unknow category (id '.$key.')'
+        ];
+    }
+    
     public $id;
     public $code;
     public $name;
@@ -65,8 +73,13 @@ class WorkoutCategory
     public function __construct($categoryId)
     {
         $this->id = $categoryId;
-        $this->code = self::$categoriesMap[$categoryId]['code'];
-        $this->name = self::$categoriesMap[$categoryId]['name'];
+        try {
+            $category = self::$categoriesMap[$categoryId];
+        } catch (\Exception $e) {
+            $category = self::mapNotFound($categoryId);
+        }
+        $this->code = $category['code'];
+        $this->name = $category['name'];
     }
     
     /**

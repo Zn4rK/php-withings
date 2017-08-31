@@ -12,8 +12,7 @@ class SleepCollection extends Collection {
         
         foreach ($params['series'] as $sleep)
         {
-            $sleep = new Sleep($sleep);
-            $this->put($sleep->createdAt, $sleep);
+            $this->push(new Sleep($sleep));
         }
         
         unset($params);

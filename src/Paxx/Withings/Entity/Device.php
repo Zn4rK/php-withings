@@ -13,7 +13,13 @@ class Device
     public static $modelMap = array(
         16 => [ 'name' => 'Activity Tracker' ],
         32 => [ 'name' => 'Aura', 'provideRem' => true ],
+        // 51 seen on a Workout created on https://dashboard.health.nokia.com/ (with attrib 0 though ..)
     );
+    
+    public static function mapNotFound($key)
+    {
+        return [ 'name' => 'Unknow device (id '.$key.')' ];
+    }
     
     public $id;
     public $name;
@@ -21,9 +27,14 @@ class Device
     public function __construct($modelId)
     {
         $this->id = $modelId;
-        $this->name = self::$modelMap[$modelId]['name'];
+        try {
+            $model = self::$modelMap[$modelId];
+        } catch (\Exception $e) {
+            $model = self::mapNotFound($modelId);
+        }
+        $this->name = $model['name'];
     }
-
+    
     /**
      * Get the category name
      *

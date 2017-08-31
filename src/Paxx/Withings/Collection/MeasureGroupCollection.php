@@ -20,7 +20,7 @@ class MeasureGroupCollection extends Collection {
         parent::__construct();
         foreach ($params['measuregrps'] as $group)
         {
-            $this->put($group['grpid'], new MeasureGroup($group, $params['timezone']));
+            $this->push(new MeasureGroup($group, $params['timezone']));
         }
         
         unset($params);

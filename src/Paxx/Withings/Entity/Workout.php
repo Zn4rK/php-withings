@@ -5,6 +5,7 @@ namespace Paxx\Withings\Entity;
 use Paxx\Withings\Collection\MeasureCollection;
 use Carbon\Carbon;
 use Paxx\Withings\Entity\Device;
+use Paxx\Withings\Entity\MeasureAttrib;
 use Paxx\Withings\Entity\WorkoutCategory;
 
 class Workout extends MeasureCollection
@@ -56,12 +57,13 @@ class Workout extends MeasureCollection
      */
     public function __construct(array $params = array())
     {
+        //$this->raw = $params;
         $this->createdAt = Carbon::createFromFormat('Y-m-d', $params['date'], $params['timezone']);
         $this->startDate = Carbon::createFromTimestamp($params['startdate'], $params['timezone']);
         $this->endDate   = Carbon::createFromTimestamp($params['enddate'], $params['timezone']);
         $this->model     = new Device($params['model']);
         $this->category  = new WorkoutCategory($params['category']);
-        $this->attrib    = new MeasureAttrib($param['attrib']);
+        $this->attrib    = (isset($params['attrib'])) ? new MeasureAttrib($params['attrib']) : null;
         
         parent::__construct(
             $params['data'], 

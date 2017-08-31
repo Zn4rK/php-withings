@@ -28,6 +28,14 @@ class SleepState
         ],
     );
     
+    public static function mapNotFound($key)
+    {
+        return [
+            'code' => '_unk'.key,
+            'desc' => 'Unknow sleep state (id '.$key.')'
+        ];
+    }
+    
     public $id;
     public $code;
     public $desc;
@@ -37,10 +45,17 @@ class SleepState
     public function __construct($stateId, $startDate = null, $endDate = null)
     {
         $this->id = $stateId;
-        $this->code = self::$stateMap[$stateId]['code'];
-        $this->desc = self::$stateMap[$stateId]['desc'];
         $this->startDate = Carbon::createFromTimestamp($startDate);
         $this->endDate = Carbon::createFromTimestamp($endDate);
+        
+        try {
+            $state = self::$stateMap[$stateId];
+        } catch (\Exception $e) {
+            $state = self::mapNotFound($stateId);
+        }
+        $this->code = $state['code'];
+        $this->desc = $state['desc'];
+        
     }
     
 }

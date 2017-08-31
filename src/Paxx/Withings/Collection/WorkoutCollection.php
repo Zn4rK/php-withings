@@ -12,8 +12,7 @@ class WorkoutCollection extends Collection {
         
         foreach ($params['series'] as $workout)
         {
-            $workout = new Workout($workout);
-            $this->put($workout->createdAt, $workout);
+            $this->push(new Workout($workout));
         }
         
         unset($params);

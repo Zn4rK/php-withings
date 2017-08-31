@@ -12,8 +12,7 @@ class IntradayActivityCollection extends Collection {
         
         foreach ($params['series'] as $timestamp => $activity)
         {
-            $activity = new IntradayActivity($activity, $timestamp);
-            $this->put($activity->createdAt, $activity);
+            $this->push(new IntradayActivity($activity, $timestamp));
         }
         
         unset($params);

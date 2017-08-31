@@ -31,6 +31,15 @@ class MeasureAttrib
         ],
     );
     
+    public static function mapNotFound($key)
+    {
+        return [
+            'code' => '_unk'.key,
+            'name' => 'Unknow attrib (id '.$key.')'
+        ];
+    }
+
+    
     public $id;
     public $code;
     public $desc;
@@ -38,8 +47,13 @@ class MeasureAttrib
     public function __construct($attribId)
     {
         $this->id = $attribId;
-        $this->code = self::$attribMap[$attribId]['code'];
-        $this->desc = self::$attribMap[$attribId]['desc'];
+        try {
+            $attrib = self::$attribMap[$attribId];
+        } catch (\Exception $e) {
+            $attrib = self::mapNotFound($attribId);
+        }
+        $this->code = $attrib['code'];
+        $this->desc = $attrib['desc'];
     }
     
     /**

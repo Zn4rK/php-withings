@@ -14,13 +14,23 @@ class MeasureGroupCategory
         2 => 'Target',  // User objectives
     );
     
+    public static function mapNotFound($key)
+    {
+        return 'Unknow category (id '.$key.')';
+    }
+    
     public $id;
     public $name;
     
     public function __construct($categoryId)
     {
         $this->id = $categoryId;
-        $this->name = self::$categoriesMap[$categoryId];
+        try {
+            $category = self::$categoriesMap[$categoryId];
+        } catch (\Exception $e) {
+            $category = self::mapNotFound($categoryId);
+        }
+        $this->name = $category;
     }
     
     /**
