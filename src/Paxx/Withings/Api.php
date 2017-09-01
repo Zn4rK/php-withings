@@ -112,7 +112,7 @@ class Api
      * @return bool
      * @throws WbsException
      */
-    private function request($path = '', $action = '', $params = array(), $oldEndpoint = false)
+    public function request($path = '', $action = '', $params = array(), $oldEndpoint = false)
     {
         $params['userid'] = $this->user_id;
         
@@ -151,7 +151,7 @@ class Api
      */
     public function getUser()
     {
-        $user = $this->request('user', 'getbyuserid', [], true);
+        $user = $this->request('user', 'getbyuserid', null, true);
 
         // Pluck single record
         $user = end($user['users']);
