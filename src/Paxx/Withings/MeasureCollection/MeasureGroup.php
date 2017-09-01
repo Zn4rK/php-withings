@@ -1,6 +1,6 @@
 <?php
 
-namespace Paxx\Withings\Entity;
+namespace Paxx\Withings\MeasureCollection;
 
 use Paxx\Withings\Collection\MeasureCollection;
 use Carbon\Carbon;
@@ -56,16 +56,9 @@ class MeasureGroup extends MeasureCollection
      * @param array $params
      * @param string $timezone
      */
-    public function __construct(array $params = array(), string $timezone)
+    public static function fromParams(array $params = array(), string $timezone)
     {
-        //$this->raw = $params;
-        $this->groupId = $params['grpid'];
-        $this->createdAt = Carbon::createFromTimestamp($params['date'], $timezone);
-        $this->attrib = new MeasureAttrib($params['attrib']);
-        $this->category = new MeasureGroupCategory($params['category']);
-
-        //$this->measures = new MeasureCollection(
-        parent::__construct(
+        $instance = parent::fromEntries(
             $params['measures'],
             function ($entryKey, $entryValue) {
                 if (array_key_exists($entryValue['type'], self::$measuresMap))
@@ -80,6 +73,13 @@ class MeasureGroup extends MeasureCollection
                 }
             }
         );
+        
+        $instance->groupId = $params['grpid'];
+        $instance->createdAt = Carbon::createFromTimestamp($params['date'], $timezone);
+        $instance->attrib = new MeasureAttrib($params['attrib']);
+        $instance->category = new MeasureGroupCategory($params['category']);
+        
+        return $instance;
     }
 
     /**

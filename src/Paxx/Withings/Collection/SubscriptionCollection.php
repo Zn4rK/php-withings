@@ -10,13 +10,18 @@ class SubscriptionCollection extends Collection {
     /**
      * @param array $params
      */
-    public function __construct(array $params = array()) {
-        foreach($params['profiles'] as &$profile) {
-            $profile = new Subscription($profile);
+    public static function fromParams(array $params = array())
+    {
+        $instance = new self();
+        
+        foreach($params['profiles'] as $profile)
+        {
+            $instance->push(new Subscription($profile));
         }
 
-        parent::__construct($params['profiles']);
         unset($params);
+        
+        return $instance;
     }
 
 }

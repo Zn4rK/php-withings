@@ -182,7 +182,7 @@ class Api
 
         $activity = $this->request('v2/measure', 'getactivity', $params);
 
-        return new Collection\ActivityCollection($activity);
+        return Collection\ActivityCollection::fromParams($activity);
     }
 
     /**
@@ -195,7 +195,7 @@ class Api
     public function getMeasures(array $params = array())
     {
         $measure = $this->request('measure', 'getmeas', $params);
-        return new Collection\MeasureGroupCollection($measure);
+        return Collection\MeasureGroupCollection::fromParams($measure);
     }
     
     /**
@@ -210,7 +210,7 @@ class Api
     public function getIntradayActivity(array $params = array())
     {
         $intradayActivity = $this->request('v2/measure', 'getintradayactivity', $params);
-        return new Collection\IntradayActivityCollection($intradayActivity);
+        return Collection\IntradayActivityCollection::fromParams($intradayActivity);
     }
     
     /**
@@ -227,7 +227,7 @@ class Api
             $params['enddate'] = Carbon::today()->timestamp;
         }
         $measure = $this->request('v2/sleep', 'get', $params);
-        return new Collection\SleepStateCollection($measure);
+        return Collection\SleepStateCollection::fromParams($measure);
     }
     
     /**
@@ -240,7 +240,7 @@ class Api
     public function getSleepSummary(array $params = array())
     {
         $measure = $this->request('v2/sleep', 'getsummary', $params);
-        return new Collection\SleepCollection($measure);
+        return Collection\SleepCollection::fromParams($measure);
     }
     
     /**
@@ -253,7 +253,7 @@ class Api
     public function getWorkouts(array $params = array())
     {
         $measure = $this->request('v2/measure', 'getworkouts', $params);
-        return new Collection\WorkoutCollection($measure);
+        return Collection\WorkoutCollection::fromParams($measure);
     }
 
     /**
@@ -320,7 +320,7 @@ class Api
     public function listSubscriptions($appli = 1)
     {
         $list = $this->request('notify', 'list', array('appli' => $appli));
-        return new Collection\SubscriptionCollection($list);
+        return Collection\SubscriptionCollection::fromParams($list);
     }
 
     /**

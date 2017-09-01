@@ -3,18 +3,22 @@
 namespace Paxx\Withings\Collection;
 
 use Illuminate\Support\Collection;
-use Paxx\Withings\Entity\Sleep;
+use Paxx\Withings\MeasureCollection\Sleep;
 
 class SleepCollection extends Collection {
 
-    public function __construct(array $params = array()) {
-        parent::__construct();
+   public static function fromParams(array $params = array())
+    {
+        $instance = new self();
         
         foreach ($params['series'] as $sleep)
         {
-            $this->push(new Sleep($sleep));
+            $instance->push(Sleep::fromParams($sleep));
         }
         
         unset($params);
+        
+        return $instance;
     }
+
 }

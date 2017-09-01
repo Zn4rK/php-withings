@@ -3,9 +3,12 @@
 namespace Paxx\Withings\Entity;
 
 use Carbon\Carbon;
+use Paxx\Withings\Traits\MapUtils;
 
 class SleepState
 {
+    use MapUtils;
+    
     /**
      * @doc https://developer.health.nokia.com/api/doc#api-Measure-get_sleep
      */
@@ -28,14 +31,6 @@ class SleepState
         ],
     );
     
-    public static function mapNotFound($key)
-    {
-        return [
-            'code' => '_unk'.key,
-            'desc' => 'Unknow sleep state (id '.$key.')'
-        ];
-    }
-    
     public $id;
     public $code;
     public $desc;
@@ -48,11 +43,7 @@ class SleepState
         $this->startDate = Carbon::createFromTimestamp($startDate);
         $this->endDate = Carbon::createFromTimestamp($endDate);
         
-        try {
-            $state = self::$stateMap[$stateId];
-        } catch (\Exception $e) {
-            $state = self::mapNotFound($stateId);
-        }
+        $state = self::getFromMap(self::$stateMap, 'sleep state', $stateId);
         $this->code = $state['code'];
         $this->desc = $state['desc'];
         

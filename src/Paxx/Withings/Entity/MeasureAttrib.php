@@ -2,8 +2,12 @@
 
 namespace Paxx\Withings\Entity;
 
+use Paxx\Withings\Traits\MapUtils;
+
 class MeasureAttrib
 {
+    use MapUtils;
+    
     public static $attribMap = array(
         0 => [
             'code' => 'userDevice',
@@ -30,14 +34,6 @@ class MeasureAttrib
             'desc' => 'Measure confirmed. You can get this value if the user confirmed a detected activity'
         ],
     );
-    
-    public static function mapNotFound($key)
-    {
-        return [
-            'code' => '_unk'.key,
-            'name' => 'Unknow attrib (id '.$key.')'
-        ];
-    }
 
     
     public $id;
@@ -47,11 +43,8 @@ class MeasureAttrib
     public function __construct($attribId)
     {
         $this->id = $attribId;
-        try {
-            $attrib = self::$attribMap[$attribId];
-        } catch (\Exception $e) {
-            $attrib = self::mapNotFound($attribId);
-        }
+        
+        $attrib = self::getFromMap(self::$attribMap, 'attrib', $attribId);
         $this->code = $attrib['code'];
         $this->desc = $attrib['desc'];
     }

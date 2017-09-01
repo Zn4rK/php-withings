@@ -1,6 +1,6 @@
 <?php
 
-namespace Paxx\Withings\Entity;
+namespace Paxx\Withings\MeasureCollection;
 
 use Paxx\Withings\Collection\MeasureCollection;
 use Carbon\Carbon;
@@ -55,17 +55,9 @@ class Workout extends MeasureCollection
     /**
      * @param array $params
      */
-    public function __construct(array $params = array())
+    public static function fromParams(array $params = array())
     {
-        //$this->raw = $params;
-        $this->createdAt = Carbon::createFromFormat('Y-m-d', $params['date'], $params['timezone']);
-        $this->startDate = Carbon::createFromTimestamp($params['startdate'], $params['timezone']);
-        $this->endDate   = Carbon::createFromTimestamp($params['enddate'], $params['timezone']);
-        $this->model     = new Device($params['model']);
-        $this->category  = new WorkoutCategory($params['category']);
-        $this->attrib    = (isset($params['attrib'])) ? new MeasureAttrib($params['attrib']) : null;
-        
-        parent::__construct(
+        $instance = static::fromEntries(
             $params['data'], 
             function ($entryKey, $entryValue) {
                if (array_key_exists($entryKey, self::$measuresMap))
@@ -80,6 +72,16 @@ class Workout extends MeasureCollection
                 } 
             }
         );
+        
+        //$this->raw = $params;
+        $instance->createdAt = Carbon::createFromFormat('Y-m-d', $params['date'], $params['timezone']);
+        $instance->startDate = Carbon::createFromTimestamp($params['startdate'], $params['timezone']);
+        $instance->endDate   = Carbon::createFromTimestamp($params['enddate'], $params['timezone']);
+        $instance->model     = new Device($params['model']);
+        $instance->category  = new WorkoutCategory($params['category']);
+        $instance->attrib    = (isset($params['attrib'])) ? new MeasureAttrib($params['attrib']) : null;
+        
+        return $instance;
     }
 
 }

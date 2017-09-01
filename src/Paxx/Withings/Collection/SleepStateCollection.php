@@ -13,14 +13,15 @@ class SleepStateCollection extends Collection {
      */
     public $model;
     
-    public function __construct(array $params = array()) {
-        $this->model = new Device($params['model']);
+    public static function fromParams(array $params = array())
+    {
+        $instance = new self();
         
-        parent::__construct();
+        $instance->model = new Device($params['model']);
         
         foreach ($params['series'] as $timestamp => $sleepState)
         {
-            $this->push(
+            $instance->push(
                 new SleepState(
                     $sleepState['state'],
                     $sleepState['startdate'],
@@ -30,5 +31,8 @@ class SleepStateCollection extends Collection {
         }
         
         unset($params);
+        
+        return $instance;
     }
+
 }

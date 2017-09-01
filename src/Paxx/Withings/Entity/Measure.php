@@ -35,6 +35,24 @@ class Measure
         return $this->extra[$name] ?: $this->{$name};
     }
     
+    /**
+     * Retreive a measure information ; $measure->getCode() for example
+     *
+     * @return Measure
+     */
+    public function __call($methodName, $arguments)
+    {
+        if (strncmp($methodName, 'get', 3) === 0)
+        {
+            return $this->__get(lcfirst(substr($methodName, 3)));
+        }
+        else // Try to access a private function not starting with get
+        {
+            $exception = (PHP_MAJOR_VERSION < 7) ? '\Exception' : '\Error'; // Try to imitate PHP behaviour
+            throw new $exception(sprintf('Call to undefined or private method %s::%s()', get_called_class(), $methodName));
+        }
+    }
+    
     public static function fromArray(array $datas)
     {
         return new self(

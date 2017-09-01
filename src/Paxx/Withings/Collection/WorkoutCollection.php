@@ -3,18 +3,22 @@
 namespace Paxx\Withings\Collection;
 
 use Illuminate\Support\Collection;
-use Paxx\Withings\Entity\Workout;
+use Paxx\Withings\MeasureCollection\Workout;
 
 class WorkoutCollection extends Collection {
 
-    public function __construct(array $params = array()) {
-        parent::__construct();
+    public static function fromParams(array $params = array())
+    {
+        $instance = new self();
         
         foreach ($params['series'] as $workout)
         {
-            $this->push(new Workout($workout));
+            $instance->push(Workout::fromParams($workout));
         }
         
         unset($params);
+        
+        return $instance;
     }
+
 }

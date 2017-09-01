@@ -4,7 +4,7 @@ namespace Paxx\Withings\Collection;
 
 use Illuminate\Support\Collection;
 use Carbon\Carbon;
-use Paxx\Withings\Entity\MeasureGroup;
+use Paxx\Withings\MeasureCollection\MeasureGroup;
 
 class MeasureGroupCollection extends Collection {
 
@@ -13,17 +13,21 @@ class MeasureGroupCollection extends Collection {
      */
     public $updatedAt;
 
-    public function __construct(array $params = array()) {
-        //$this->raw = $params;
-        $this->updatedAt = Carbon::createFromTimestamp($params['updatetime'], $params['timezone']);
+    public static function fromParams(array $params = array())
+    {
+        $instance = new self();
         
-        parent::__construct();
+        //$this->raw = $params;
+        $instance->updatedAt = Carbon::createFromTimestamp($params['updatetime'], $params['timezone']);
+        
         foreach ($params['measuregrps'] as $group)
         {
-            $this->push(new MeasureGroup($group, $params['timezone']));
+            $instance->push(MeasureGroup::fromParams($group, $params['timezone']));
         }
         
         unset($params);
+        
+        return $instance;
     }
 
 }

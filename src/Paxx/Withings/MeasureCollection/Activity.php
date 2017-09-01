@@ -1,6 +1,6 @@
 <?php
 
-namespace Paxx\Withings\Entity;
+namespace Paxx\Withings\MeasureCollection;
 
 use Paxx\Withings\Collection\MeasureCollection;
 use Carbon\Carbon;
@@ -29,11 +29,9 @@ class Activity extends MeasureCollection
     /**
      * @param array $params
      */
-    public function __construct(array $params = array())
+    public static function fromParams(array $params = array())
     {
-        $this->createdAt = Carbon::createFromFormat('Y-m-d', $params['date'], $params['timezone']);
-        
-        parent::__construct(
+        $instance = static::fromEntries(
             $params, 
             function ($entryKey, $entryValue) {
                if (array_key_exists($entryKey, self::$measuresMap))
@@ -48,6 +46,10 @@ class Activity extends MeasureCollection
                 } 
             }
         );
+        
+        $instance->createdAt = Carbon::createFromFormat('Y-m-d', $params['date'], $params['timezone']);
+        
+        return $instance;
     }
 
 }

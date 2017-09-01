@@ -3,28 +3,32 @@
 namespace Paxx\Withings\Collection;
 
 use Illuminate\Support\Collection;
-use Paxx\Withings\Entity\Activity;
+use Paxx\Withings\MeasureCollection\Activity;
 
 class ActivityCollection extends Collection {
 
-    public function __construct(array $params = array()) {
-        parent::__construct();
+    public static function fromParams(array $params = array())
+    {
+        $instance = new self();
         
-        if(isset($params['activities']))
+        if (isset($params['activities']))
         {
-            foreach($params['activities'] as $activity)
+            foreach ($params['activities'] as $activity)
             {
-                $activity = new Activity($activity);
-                $this->put($activity->createdAt, $activity);
+                $activity = Activity::fromParams($activity);
+                $instance->push($activity);
             }
         }
         else
         {
             // We only have one item
-            $activity = new Activity($params);
-            $this->put($activity->createdAt, $activity);
+            $activity = Activity::fromParams($params);
+            $instance->push($activity);
         }
         
         unset($params);
+        
+        return $instance;
     }
+
 }

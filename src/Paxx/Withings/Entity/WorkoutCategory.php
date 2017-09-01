@@ -2,8 +2,12 @@
 
 namespace Paxx\Withings\Entity;
 
+use Paxx\Withings\Traits\MapUtils;
+
 class WorkoutCategory
 {
+    use MapUtils;
+    
     /**
      * Categories
      * 
@@ -58,14 +62,6 @@ class WorkoutCategory
         196 => [ 'code' => 'IceSkating',    'name' => 'IceSkating' ],
     );
     
-    public static function mapNotFound($key)
-    {
-        return [
-            'code' => '_unk'.key,
-            'name' => 'Unknow category (id '.$key.')'
-        ];
-    }
-    
     public $id;
     public $code;
     public $name;
@@ -73,11 +69,7 @@ class WorkoutCategory
     public function __construct($categoryId)
     {
         $this->id = $categoryId;
-        try {
-            $category = self::$categoriesMap[$categoryId];
-        } catch (\Exception $e) {
-            $category = self::mapNotFound($categoryId);
-        }
+        $category = self::getFromMap(self::$categoriesMap, 'category', $categoryId);
         $this->code = $category['code'];
         $this->name = $category['name'];
     }

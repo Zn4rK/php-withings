@@ -2,22 +2,21 @@
 
 namespace Paxx\Withings\Entity;
 
+use Paxx\Withings\Traits\MapUtils;
+
 class MeasureGroupCategory
 {
+    use MapUtils;
+    
     /**
      * Category raw value (1 for "measure", 2 for "target")
      * 
      * @var array
      */
     public static $categoriesMap = array(
-        1 => 'Measure', // Real measurements
-        2 => 'Target',  // User objectives
+        1 => [ 'name' => 'Measure', 'desc' => 'Real measurements' ],
+        2 => [ 'name' => 'Target',  'desc' => 'User objectives' ],
     );
-    
-    public static function mapNotFound($key)
-    {
-        return 'Unknow category (id '.$key.')';
-    }
     
     public $id;
     public $name;
@@ -25,12 +24,10 @@ class MeasureGroupCategory
     public function __construct($categoryId)
     {
         $this->id = $categoryId;
-        try {
-            $category = self::$categoriesMap[$categoryId];
-        } catch (\Exception $e) {
-            $category = self::mapNotFound($categoryId);
-        }
-        $this->name = $category;
+        
+        $category = self::getFromMap(self::$categoriesMap, 'category', $categoryId);
+        $this->name = $category['name'];
+        $this->desc = $category['desc'];
     }
     
     /**

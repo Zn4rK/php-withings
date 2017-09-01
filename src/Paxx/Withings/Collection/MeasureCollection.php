@@ -6,27 +6,28 @@ use Illuminate\Support\Collection;
 use Carbon\Carbon;
 use Paxx\Withings\Entity\Measure;
 
-class MeasureCollection
+class MeasureCollection extends Collection
 {
-    public $measures;
-    
     /**
      * @param array $entries
      * @param callable $entryToMeasureCallback
      * @return MeasureCollection
      */
-    public function __construct(array $entries = array(), callable $entryToMeasureCallback)
+    public static function fromEntries(array $entries = array(), callable $entryToMeasureCallback)
     {
-        $this->measures = new Collection();
+        $instance = new static(); // Overloading the Collection::__construct() is a bad idea .. it breaks ->keys() for example
+        
         foreach ($entries as $entryKey => $entryValue) {
             $formattedEntry = $entryToMeasureCallback($entryKey, $entryValue);
             if ($formattedEntry)
             {
-                $this->measures->put($formattedEntry['code'], Measure::fromArray(
+                $instance->put($formattedEntry['code'], Measure::fromArray(
                     $formattedEntry
                 ));
             }
         }
+        
+        return $instance;
     }
     
     /**
@@ -36,7 +37,7 @@ class MeasureCollection
      */
     public function getAvailableMeasures()
     {
-        return $this->measures->keys();
+        return $this->keys();
     }
     
     /**
@@ -46,7 +47,7 @@ class MeasureCollection
      */
     public function __get($propertyName)
     {
-        return $this->measures->get($propertyName);
+        return $this->get($propertyName);
     }
     
     /**
@@ -56,11 +57,15 @@ class MeasureCollection
      */
     public function __call($methodName, $arguments)
     {
-        if (strncmp($methodName, 'get', 3) === 0) {
-            return $this->measures->get(lcfirst(substr($methodName, 3)));
-        } else {
+        if (strncmp($methodName, 'get', 3) === 0)
+        {
+            return $this->get(lcfirst(substr($methodName, 3)));
+        }
+        else // Try to access a private function not starting with get
+        {
             $exception = (PHP_MAJOR_VERSION < 7) ? '\Exception' : '\Error'; // Try to imitate PHP behaviour
-            throw new $exception(sprintf('Call to undefined method %s::%s()', get_called_class(), $methodName));
+            throw new $exception(sprintf('Call to undefined or private method %s::%s()', get_called_class(), $methodName));
         }
     }
+
 }
