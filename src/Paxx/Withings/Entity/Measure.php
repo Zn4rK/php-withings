@@ -79,6 +79,11 @@ class Measure
         return floatval(round($this->value, 2)).' '.((!empty($this->unit)) ? $this->unit : '');
     }
 
+    public function __toString()
+    {
+        return $this->code.': '.$this->formatted();
+    }
+    
     /**
      * @return Measure
      */

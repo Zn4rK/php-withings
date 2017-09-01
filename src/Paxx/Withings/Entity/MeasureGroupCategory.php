@@ -20,6 +20,7 @@ class MeasureGroupCategory
     
     public $id;
     public $name;
+    public $desc;
     
     public function __construct($categoryId)
     {

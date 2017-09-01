@@ -13,10 +13,6 @@ Input parameters can be found here: http://www.withings.com/api (and very often 
 
 ### Todo
 
-* Implement Sleep Measures
-* Implement Sleep Summary
-* Implement Intraday Activity
-* Implement Workouts
 * Write tests
 
 ### Note

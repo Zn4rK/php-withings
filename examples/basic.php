@@ -53,7 +53,8 @@ echo 'Here are your measures: <hr>';
 /**
  * @var \Paxx\Withings\MeasureCollection\MeasureGroup $measure
  */
-foreach($user->getMeasureGroups() as $measureGroup) {
+$measureGroups = $user->getMeasureGroups();
+foreach($measureGroups as $measureGroup) {
     echo $measureGroup->getCreatedAt() . ': <br>';
     if ($measureGroup->availableMeasures()->contains('weight'))
     {
@@ -66,6 +67,15 @@ foreach($user->getMeasureGroups() as $measureGroup) {
         echo 'The measure group #'.$measureGroup->groupId.' doesn\'t contain weight<br>';
     }
 }
+
+// As $measureGroups is a Collection, you can sort it ; but you'll lost properties added around the items
+// For example : 
+$sortedMeasureGroups = $measureGroups->sortBy(
+    function ($measureGroup, $key) {
+        return $measureGroup->createdAt;
+    }
+);
+// Because the Collection class makes a copy, the $measureGroups->updatedAt is lost in $sortedMeasureGroups
 
 /*
 2017-08-30 02:30:00: 
