@@ -55,6 +55,11 @@ class Measure
             'is_imperial' => $this->isImperial,
         ];
     }
+    
+    public function formatted()
+    {
+        return floatval(round($this->value, 2)).' '.((!empty($this->unit)) ? $this->unit : '');
+    }
 
     /**
      * @return Measure

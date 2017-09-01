@@ -6,20 +6,23 @@ use Illuminate\Support\Collection;
 use Carbon\Carbon;
 use Paxx\Withings\Entity\Measure;
 
-class MeasureCollection extends Collection
+class MeasureCollection
 {
+    public $measures;
+    
     /**
      * @param array $entries
      * @param callable $entryToMeasureCallback
+     * @return MeasureCollection
      */
     public function __construct(array $entries = array(), callable $entryToMeasureCallback)
     {
-        parent::__construct();
+        $this->measures = new Collection();
         foreach ($entries as $entryKey => $entryValue) {
             $formattedEntry = $entryToMeasureCallback($entryKey, $entryValue);
             if ($formattedEntry)
             {
-                $this->put($formattedEntry['code'], Measure::fromArray(
+                $this->measures->put($formattedEntry['code'], Measure::fromArray(
                     $formattedEntry
                 ));
             }
@@ -29,11 +32,21 @@ class MeasureCollection extends Collection
     /**
      * List available measures
      *
-     * @return Array
+     * @return Collection
      */
     public function getAvailableMeasures()
     {
-        return $this->keys();
+        return $this->measures->keys();
+    }
+    
+    /**
+     * Retreive a measure by it's code ; $activity->steps for example
+     *
+     * @return Measure
+     */
+    public function __get($propertyName)
+    {
+        return $this->measures->get($propertyName);
     }
     
     /**
@@ -41,8 +54,13 @@ class MeasureCollection extends Collection
      *
      * @return Measure
      */
-    public function __get($name)
+    public function __call($methodName, $arguments)
     {
-        return $this->get($name);
+        if (strncmp($methodName, 'get', 3) === 0) {
+            return $this->measures->get(lcfirst(substr($methodName, 3)));
+        } else {
+            $exception = (PHP_MAJOR_VERSION < 7) ? '\Exception' : '\Error'; // Try to imitate PHP behaviour
+            throw new $exception(sprintf('Call to undefined method %s::%s()', get_called_class(), $methodName));
+        }
     }
 }
