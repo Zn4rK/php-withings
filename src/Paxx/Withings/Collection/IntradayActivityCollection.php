@@ -11,6 +11,8 @@ class IntradayActivityCollection extends Collection {
     {
         $instance = new self();
         
+        //$instance->raw = $params;
+        
         foreach ($params['series'] as $timestamp => $activity)
         {
             $instance->push(IntradayActivity::fromParams($activity, $timestamp));

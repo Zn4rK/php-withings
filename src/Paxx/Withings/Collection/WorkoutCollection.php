@@ -11,6 +11,8 @@ class WorkoutCollection extends Collection {
     {
         $instance = new self();
         
+        //$instance->raw = $params;
+        
         foreach ($params['series'] as $workout)
         {
             $instance->push(Workout::fromParams($workout));

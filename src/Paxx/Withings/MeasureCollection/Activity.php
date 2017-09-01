@@ -47,6 +47,7 @@ class Activity extends MeasureCollection
             }
         );
         
+        //$instance->raw = $params;
         $instance->createdAt = Carbon::createFromFormat('Y-m-d', $params['date'], $params['timezone']);
         
         return $instance;

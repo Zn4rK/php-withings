@@ -74,6 +74,7 @@ class MeasureGroup extends MeasureCollection
             }
         );
         
+        //$instance->raw = $params;
         $instance->groupId = $params['grpid'];
         $instance->createdAt = Carbon::createFromTimestamp($params['date'], $timezone);
         $instance->attrib = new MeasureAttrib($params['attrib']);

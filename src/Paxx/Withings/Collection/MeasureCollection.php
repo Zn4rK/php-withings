@@ -32,10 +32,11 @@ class MeasureCollection extends Collection
     
     /**
      * List available measures
-     *
-     * @return Collection
+     * Returns MeasureCollection with only codes
+     * 
+     * @return MeasureCollection
      */
-    public function getAvailableMeasures()
+    public function availableMeasures()
     {
         return $this->keys();
     }
@@ -59,9 +60,12 @@ class MeasureCollection extends Collection
     {
         if (strncmp($methodName, 'get', 3) === 0)
         {
-            return $this->get(lcfirst(substr($methodName, 3)));
+            $property = lcfirst(substr($methodName, 3));
+            // We may check if $this->{$property} is public here .. But it needs Reflection and this seems slow
+            // This is only an helper / retrocompat' feature to have getCreatedAt() for example
+            return $this->get($property) ?: $this->{$property};
         }
-        else // Try to access a private function not starting with get
+        else // Try to access an undefined or non-public function not starting with get
         {
             $exception = (PHP_MAJOR_VERSION < 7) ? '\Exception' : '\Error'; // Try to imitate PHP behaviour
             throw new $exception(sprintf('Call to undefined or private method %s::%s()', get_called_class(), $methodName));

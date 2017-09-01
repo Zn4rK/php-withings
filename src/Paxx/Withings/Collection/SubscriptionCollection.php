@@ -14,6 +14,8 @@ class SubscriptionCollection extends Collection {
     {
         $instance = new self();
         
+        //$instance->raw = $params;
+        
         foreach($params['profiles'] as $profile)
         {
             $instance->push(new Subscription($profile));

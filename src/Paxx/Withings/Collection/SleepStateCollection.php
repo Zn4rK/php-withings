@@ -17,6 +17,7 @@ class SleepStateCollection extends Collection {
     {
         $instance = new self();
         
+        //$instance->raw = $params;
         $instance->model = new Device($params['model']);
         
         foreach ($params['series'] as $timestamp => $sleepState)

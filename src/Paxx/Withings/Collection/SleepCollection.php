@@ -11,6 +11,8 @@ class SleepCollection extends Collection {
     {
         $instance = new self();
         
+        //$instance->raw = $params;
+        
         foreach ($params['series'] as $sleep)
         {
             $instance->push(Sleep::fromParams($sleep));

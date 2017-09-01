@@ -187,12 +187,26 @@ class Api
 
     /**
      * Get user's measurements
+     * /!\ This is an alias to getMeasureGroups(), because they are actually
+     * MeasureGroups. You should use getMeasureGroups()
      *
      * @param array $params
      * @return Collection\MeasureGroupCollection
      * @throws WbsException       If an error is returned from the API
      */
     public function getMeasures(array $params = array())
+    {
+        return $this->getMeasureGroups($params);
+    }
+    
+    /**
+     * Get user's measurements
+     *
+     * @param array $params
+     * @return Collection\MeasureGroupCollection
+     * @throws WbsException       If an error is returned from the API
+     */
+    public function getMeasureGroups(array $params = array())
     {
         $measure = $this->request('measure', 'getmeas', $params);
         return Collection\MeasureGroupCollection::fromParams($measure);

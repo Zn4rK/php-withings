@@ -11,6 +11,8 @@ class ActivityCollection extends Collection {
     {
         $instance = new self();
         
+        //$instance->raw = $params;
+        
         if (isset($params['activities']))
         {
             foreach ($params['activities'] as $activity)

@@ -73,7 +73,7 @@ class Workout extends MeasureCollection
             }
         );
         
-        //$this->raw = $params;
+        //$instance->raw = $params;
         $instance->createdAt = Carbon::createFromFormat('Y-m-d', $params['date'], $params['timezone']);
         $instance->startDate = Carbon::createFromTimestamp($params['startdate'], $params['timezone']);
         $instance->endDate   = Carbon::createFromTimestamp($params['enddate'], $params['timezone']);

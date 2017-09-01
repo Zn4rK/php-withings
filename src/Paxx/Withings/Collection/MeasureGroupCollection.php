@@ -17,7 +17,7 @@ class MeasureGroupCollection extends Collection {
     {
         $instance = new self();
         
-        //$this->raw = $params;
+        //$instance->raw = $params;
         $instance->updatedAt = Carbon::createFromTimestamp($params['updatetime'], $params['timezone']);
         
         foreach ($params['measuregrps'] as $group)

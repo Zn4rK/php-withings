@@ -46,6 +46,7 @@ class IntradayActivity extends MeasureCollection
             }
         );
         
+        //$instance->raw = $params;
         $instance->createdAt = Carbon::createFromTimestamp($timestamp);
         
         return $instance;
