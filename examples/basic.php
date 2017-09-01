@@ -67,16 +67,6 @@ foreach($measureGroups as $measureGroup) {
         echo 'The measure group #'.$measureGroup->groupId.' doesn\'t contain weight<br>';
     }
 }
-
-// As $measureGroups is a Collection, you can sort it ; but you'll lost properties added around the items
-// For example : 
-$sortedMeasureGroups = $measureGroups->sortBy(
-    function ($measureGroup, $key) {
-        return $measureGroup->createdAt;
-    }
-);
-// Because the Collection class makes a copy, the $measureGroups->updatedAt is lost in $sortedMeasureGroups
-
 /*
 2017-08-30 02:30:00: 
 The measure group #892135111 doesn't contain weight
@@ -86,6 +76,15 @@ The measure group #890842749 doesn't contain weight
 In metric: 75 kg
 In imperial: 165.35 lbs
 */
+
+// As $measureGroups is a Collection, you can sort it ; but you'll lost properties added around the items
+// For example : 
+$sortedMeasureGroups = $measureGroups->sortBy(
+    function ($measureGroup, $key) {
+        return $measureGroup->createdAt;
+    }
+);
+// Because the Collection class makes a copy, the $measureGroups->updatedAt is lost in $sortedMeasureGroups
 
 foreach ($user->getWorkouts() as $workout) {
     echo 'Workout of '.$workout->category->name.
