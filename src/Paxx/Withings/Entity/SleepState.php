@@ -10,7 +10,7 @@ class SleepState
     use MapUtils;
     
     /**
-     * @doc https://developer.health.nokia.com/api/doc#api-Measure-get_sleep
+     * @link https://developer.health.nokia.com/api/doc#api-Measure-get_sleep
      */
     public static $stateMap = array(
         0 => [

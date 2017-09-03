@@ -10,7 +10,7 @@ use Paxx\Withings\Entity\MeasureGroupCategory;
 class MeasureGroup extends MeasureCollection
 {
     /**
-     * @doc https://developer.health.nokia.com/api/doc#api-Measure-get_measure
+     * @link https://developer.health.nokia.com/api/doc#api-Measure-get_measure
      * @var array
      */
     public static $measuresMap = array(

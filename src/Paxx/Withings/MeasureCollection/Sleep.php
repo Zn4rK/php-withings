@@ -18,7 +18,7 @@ class Sleep extends MeasureCollection
     public $model;
 
     /**
-     * @doc https://developer.health.nokia.com/api/doc#api-Measure-get_sleep_summary
+     * @link https://developer.health.nokia.com/api/doc#api-Measure-get_sleep_summary
      */
     public static $measuresMap = array(
         'wakeupduration'     => [ 'code' => 'wakeupDuration',     'unit' => 's' ],

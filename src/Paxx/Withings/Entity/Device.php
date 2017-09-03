@@ -11,7 +11,7 @@ class Device
     /**
      * Models
      * 
-     * @doc https://developer.health.nokia.com/api/doc#api-Measure-get_sleep
+     * @link https://developer.health.nokia.com/api/doc#api-Measure-get_sleep
      * @var array
      */
     public static $modelMap = array(

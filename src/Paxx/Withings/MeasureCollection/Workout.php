@@ -22,7 +22,7 @@ class Workout extends MeasureCollection
     public $attrib; // HUM ??
 
     /**
-     * @doc https://developer.health.nokia.com/api/doc#api-Measure-get_workouts
+     * @link https://developer.health.nokia.com/api/doc#api-Measure-get_workouts
      */
     public static $measuresMap = array(
         'calories'      => [

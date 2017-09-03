@@ -53,6 +53,7 @@ class MeasureCollection extends Collection
     
     /**
      * Retreive a measure by it's code ; $activity->getSteps() for example
+     * But also allows to retreive collection's properties ; $activity->getUpdatedAt() for example
      *
      * @return Measure
      */

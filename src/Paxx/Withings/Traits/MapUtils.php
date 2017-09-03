@@ -20,4 +20,5 @@ trait MapUtils {
             return self::mapNotFound($type, $key);
         }
     }
+
 }

@@ -151,7 +151,7 @@ class Api
      */
     public function getUser()
     {
-        $user = $this->request('user', 'getbyuserid', null, true);
+        $user = $this->request('user', 'getbyuserid', null);
 
         // Pluck single record
         $user = end($user['users']);

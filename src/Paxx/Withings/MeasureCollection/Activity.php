@@ -13,7 +13,7 @@ class Activity extends MeasureCollection
     public $createdAt;
 
     /**
-     * @doc https://developer.health.nokia.com/api/doc#api-Measure-get_activity
+     * @link https://developer.health.nokia.com/api/doc#api-Measure-get_activity
      */
     public static $measuresMap = array(
         'steps'         => [ 'code' => 'steps',         'unit' => null ],

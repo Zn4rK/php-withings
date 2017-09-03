@@ -13,7 +13,7 @@ class IntradayActivity extends MeasureCollection
     public $createdAt; // activityDate
 
     /**
-     * @doc https://developer.health.nokia.com/api/doc#api-Measure-get_intraday_measure
+     * @link https://developer.health.nokia.com/api/doc#api-Measure-get_intraday_measure
      */
     public static $measuresMap = array(
         'calories'  => [ 'code' => 'calories',  'unit' => 'kcal' ],

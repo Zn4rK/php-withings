@@ -30,13 +30,19 @@ class Measure
         $this->isImperial = $isImperial;
     }
     
-    public function __get($name)
+    /**
+     * Retreive an extra property
+     *
+     * @return mixed
+     */
+    public function __get($propertyName)
     {
-        return $this->extra[$name] ?: $this->{$name};
+        return (array_key_exists($propertyName, $this->extra)) ? $this->extra[$propertyName] : null;
     }
     
     /**
      * Retreive a measure information ; $measure->getCode() for example
+     * Try to look in  extra properties if it doesn't exists
      *
      * @return Measure
      */
@@ -44,9 +50,12 @@ class Measure
     {
         if (strncmp($methodName, 'get', 3) === 0)
         {
-            return $this->__get(lcfirst(substr($methodName, 3)));
+            $property = lcfirst(substr($methodName, 3));
+            // We may check if $this->{$property} is public here .. But it needs Reflection and this seems slow
+            // This is only an helper / retrocompat' feature to have getCreatedAt() for example
+            return (property_exists($this, $property)) ? $this->{$property} : $this->__get($property);
         }
-        else // Try to access a private function not starting with get
+        else // Try to access an undefined or non-public function not starting with get
         {
             $exception = (PHP_MAJOR_VERSION < 7) ? '\Exception' : '\Error'; // Try to imitate PHP behaviour
             throw new $exception(sprintf('Call to undefined or private method %s::%s()', get_called_class(), $methodName));
