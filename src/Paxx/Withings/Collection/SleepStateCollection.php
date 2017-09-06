@@ -6,7 +6,8 @@ use Illuminate\Support\Collection;
 use Paxx\Withings\Entity\Device;
 use Paxx\Withings\Entity\SleepState;
 
-class SleepStateCollection extends Collection {
+class SleepStateCollection extends Collection
+{
     
     /**
      * @var SleepDevice

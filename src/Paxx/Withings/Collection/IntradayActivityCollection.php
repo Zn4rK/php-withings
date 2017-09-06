@@ -5,7 +5,8 @@ namespace Paxx\Withings\Collection;
 use Illuminate\Support\Collection;
 use Paxx\Withings\MeasureCollection\IntradayActivity;
 
-class IntradayActivityCollection extends Collection {
+class IntradayActivityCollection extends Collection
+{
 
     public static function fromParams(array $params = array())
     {

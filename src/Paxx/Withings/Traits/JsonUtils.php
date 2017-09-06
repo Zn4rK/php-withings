@@ -6,8 +6,8 @@ use JsonSerializable;
 use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Contracts\Support\Arrayable;
 
-trait JsonUtils {
-    
+trait JsonUtils
+{
     /**
      * Returns an array of parameters to serialize when this is serialized with
      * json_encode().

@@ -5,7 +5,8 @@ namespace Paxx\Withings\Collection;
 use Illuminate\Support\Collection as Collection;
 use Paxx\Withings\Entity\Subscription;
 
-class SubscriptionCollection extends Collection {
+class SubscriptionCollection extends Collection
+{
 
     /**
      * @param array $params

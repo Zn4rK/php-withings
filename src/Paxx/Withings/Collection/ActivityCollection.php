@@ -5,7 +5,8 @@ namespace Paxx\Withings\Collection;
 use Illuminate\Support\Collection;
 use Paxx\Withings\MeasureCollection\Activity;
 
-class ActivityCollection extends Collection {
+class ActivityCollection extends Collection
+{
 
     public static function fromParams(array $params = array())
     {

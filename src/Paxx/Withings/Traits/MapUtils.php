@@ -2,7 +2,8 @@
 
 namespace Paxx\Withings\Traits;
 
-trait MapUtils {
+trait MapUtils
+{
     
     public static function mapNotFound($type, $key)
     {
