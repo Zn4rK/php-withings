@@ -18,15 +18,13 @@ class ActivityCollection extends Collection
         {
             foreach ($params['activities'] as $activity)
             {
-                $activity = Activity::fromParams($activity);
-                $instance->push($activity);
+                $instance->push(Activity::fromParams($activity));
             }
         }
         else
         {
             // We only have one item
-            $activity = Activity::fromParams($params);
-            $instance->push($activity);
+            $instance->push(Activity::fromParams($params));
         }
         
         unset($params);
