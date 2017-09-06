@@ -2,11 +2,15 @@
 
 namespace Paxx\Withings\Entity;
 
+use JsonSerializable;
+use Paxx\Withings\Traits\JsonUtils;
 use Carbon\Carbon;
 use Paxx\Withings\Api;
 
-class User
+class User implements JsonSerializable
 {
+    use JsonUtils;
+    
     /**
      * @var Integer
      */
@@ -181,4 +185,18 @@ class User
     {
         return $this->api->getActivity();
     }
+    
+    /**
+     * Returns an array of parameters to serialize when this is serialized with
+     * json_encode().
+     *
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        $this_properties = array_keys(get_object_vars($this));
+        $this_properties = array_diff($this_properties, ['api']);
+        return $this->jsonSerializeProperties($this_properties);
+    }
+
 }

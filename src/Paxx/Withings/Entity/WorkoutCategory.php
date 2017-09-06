@@ -2,9 +2,10 @@
 
 namespace Paxx\Withings\Entity;
 
+use JsonSerializable;
 use Paxx\Withings\Traits\MapUtils;
 
-class WorkoutCategory
+class WorkoutCategory implements JsonSerializable
 {
     use MapUtils;
     
@@ -82,6 +83,10 @@ class WorkoutCategory
     public function getName()
     {
         return $this->name;
+    }
+    
+    public function jsonSerialize() {
+        return $this->code;
     }
 
 }

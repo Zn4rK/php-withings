@@ -2,9 +2,10 @@
 
 namespace Paxx\Withings\Entity;
 
+use JsonSerializable;
 use Paxx\Withings\Traits\MapUtils;
 
-class MeasureGroupCategory
+class MeasureGroupCategory implements JsonSerializable
 {
     use MapUtils;
     
@@ -14,8 +15,16 @@ class MeasureGroupCategory
      * @var array
      */
     public static $categoriesMap = array(
-        1 => [ 'name' => 'Measure', 'desc' => 'Real measurements' ],
-        2 => [ 'name' => 'Target',  'desc' => 'User objectives' ],
+        1 => [ 
+            'code' => 'measure',
+            'name' => 'Measure',
+            'desc' => 'Real measurements'
+        ],
+        2 => [
+            'code' => 'target',
+            'name' => 'Target',
+            'desc' => 'User objectives'
+        ],
     );
     
     public $id;
@@ -27,6 +36,7 @@ class MeasureGroupCategory
         $this->id = $categoryId;
         
         $category = self::getFromMap(self::$categoriesMap, 'category', $categoryId);
+        $this->code = $category['code'];
         $this->name = $category['name'];
         $this->desc = $category['desc'];
     }
@@ -59,6 +69,10 @@ class MeasureGroupCategory
     public function getName()
     {
         return $this->name;
+    }
+    
+    public function jsonSerialize() {
+        return $this->code;
     }
     
 }

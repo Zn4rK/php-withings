@@ -2,10 +2,11 @@
 
 namespace Paxx\Withings\Entity;
 
-use Carbon\Carbon;
+use JsonSerializable;
 use Paxx\Withings\Traits\MapUtils;
+use Carbon\Carbon;
 
-class SleepState
+class SleepState implements JsonSerializable
 {
     use MapUtils;
     
@@ -49,4 +50,12 @@ class SleepState
         
     }
     
+    public function jsonSerialize() {
+        return [
+            'code'      => $this->code,
+            'startDate' => $this->startDate,
+            'endDate'   => $this->endDate,
+        ];
+    }
+
 }

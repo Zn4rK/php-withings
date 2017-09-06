@@ -2,8 +2,13 @@
 
 namespace Paxx\Withings\Entity;
 
-class Measure
+use JsonSerializable;
+use Paxx\Withings\Traits\JsonUtils;
+
+class Measure implements JsonSerializable
 {
+    use JsonUtils;
+    
     public static $imperialConversionTable = array(
         'm'    => [ 'ratio' => 0.393701, 'unit' => 'ft' ],
         'kg'   => [ 'ratio' => 2.20462, 'unit' => 'lbs' ],
@@ -51,9 +56,8 @@ class Measure
         if (strncmp($methodName, 'get', 3) === 0)
         {
             $property = lcfirst(substr($methodName, 3));
-            // We may check if $this->{$property} is public here .. But it needs Reflection and this seems slow
-            // This is only an helper / retrocompat' feature to have getCreatedAt() for example
-            return (property_exists($this, $property)) ? $this->{$property} : $this->__get($property);
+            $public_properties = array_keys(call_user_func('get_object_vars', $this));
+            return (in_array($property, $public_properties)) ? $this->{$property} : $this->__get($property);
         }
         else // Try to access an undefined or non-public function not starting with get
         {
@@ -68,7 +72,8 @@ class Measure
             (isset($datas['code'])) ? $datas['code'] : null,
             (isset($datas['value'])) ? $datas['value'] : null,
             (isset($datas['unit'])) ? $datas['unit'] : null,
-            (isset($datas['extra'])) ? $datas['extra'] : null
+            (isset($datas['extra'])) ? $datas['extra'] : null,
+            (isset($datas['is_imperial'])) ? $datas['is_imperial'] : (isset($datas['isImperial'])) ? $datas['isImperial'] : null
         );
     }
     
@@ -98,7 +103,11 @@ class Measure
      */
     public function asImperial()
     {
-        if (array_key_exists($this->unit, self::$imperialConversionTable))
+        if ($converted->isImperial)
+        {
+            return $this;
+        }
+        elseif (array_key_exists($this->unit, self::$imperialConversionTable))
         {
             $converted = clone $this;
             $converted->value = round($this->value * self::$imperialConversionTable[$this->unit]['ratio'], 2);
@@ -108,8 +117,39 @@ class Measure
         }
         else
         {
-            return $this;
+            return $this; // Or null ? Or false ? Or exception ?
         }
+    }
+    
+    /**
+     * Returns an array of parameters to serialize when this is serialized with
+     * json_encode().
+     *
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        $json = [];
+        
+        if (isset($this->code))
+            $json['code'] = self::valueToJson($this->code);
+        
+        if (isset($this->value))
+            $json['value'] = self::valueToJson($this->value);
+        
+        if (isset($this->unit))
+            $json['unit'] = self::valueToJson($this->unit);
+        
+        // https://stackoverflow.com/questions/5543490/json-naming-convention ...
+        if ($this->isImperial)
+            $json['isImperial'] = $this->isImperial;
+        
+        if (!empty($this->extra))
+            foreach ($this->extra as $key => $extra)
+                if (isset($extra))
+                    $json['extra'][$key] = self::valueToJson($extra);
+        
+        return $json;
     }
 
 }

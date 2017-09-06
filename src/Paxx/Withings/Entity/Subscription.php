@@ -2,10 +2,14 @@
 
 namespace Paxx\Withings\Entity;
 
+use JsonSerializable;
+use Paxx\Withings\Traits\JsonUtils;
 use Carbon\Carbon;
 
-class Subscription
+class Subscription implements JsonSerializable
 {
+    use JsonUtils;
+    
     /**
      * @var Carbon
      */
@@ -73,4 +77,16 @@ class Subscription
     {
         return $this->appli;
     }
+    
+    /**
+     * Returns an array of parameters to serialize when this is serialized with
+     * json_encode().
+     *
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        return $this->jsonSerializeProperties(array_keys(get_object_vars($this)));
+    }
+
 }

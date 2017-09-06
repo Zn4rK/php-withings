@@ -2,9 +2,10 @@
 
 namespace Paxx\Withings\Entity;
 
+use JsonSerializable;
 use Paxx\Withings\Traits\MapUtils;
 
-class Device
+class Device implements JsonSerializable
 {
     use MapUtils;
     
@@ -15,8 +16,27 @@ class Device
      * @var array
      */
     public static $modelMap = array(
-        16 => [ 'name' => 'Activity Tracker' ],
-        32 => [ 'name' => 'Aura', 'provideSleepRem' => true ],
+        0  => [
+            'code' => 'userRelated',
+            'name' => 'User related',
+        ],
+        1  => [
+            'code' => 'bodyScale',
+            'name' => 'Body Scale',
+        ],
+        4  => [
+            'code' => 'bloodPressure',
+            'name' => 'Blood pressure monitor',
+        ],
+        16 => [
+            'code' => 'activityTracker',
+            'name' => 'Activity Tracker',
+        ],
+        32 => [
+            'code' => 'aura',
+            'name' => 'Aura',
+            'provideSleepRem' => true,
+        ],
         // 51 seen on a Workout created on https://dashboard.health.nokia.com/ (with attrib 0 though ..)
     );
     
@@ -29,6 +49,7 @@ class Device
         $this->id = $modelId;
         
         $model = self::getFromMap(self::$modelMap, 'device', $modelId);
+        $this->code = $model['code'];
         $this->name = $model['name'];
     }
     
@@ -45,5 +66,9 @@ class Device
     public function provideRem()
     {
         return (isset(self::$modelMap[$modelId]['provideRem']) && self::$modelMap[$modelId]['provideRem']);
+    }
+    
+    public function jsonSerialize() {
+        return $this->code;
     }
 }

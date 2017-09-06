@@ -2,9 +2,10 @@
 
 namespace Paxx\Withings\Entity;
 
+use JsonSerializable;
 use Paxx\Withings\Traits\MapUtils;
 
-class MeasureAttrib
+class MeasureAttrib implements JsonSerializable
 {
     use MapUtils;
     
@@ -57,5 +58,9 @@ class MeasureAttrib
     public function isAmbiguous()
     {
         return ($this->id == 1 || $this->id == 4);
+    }
+    
+    public function jsonSerialize() {
+        return $this->code;
     }
 }

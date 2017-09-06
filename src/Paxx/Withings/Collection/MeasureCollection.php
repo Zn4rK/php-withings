@@ -3,11 +3,14 @@
 namespace Paxx\Withings\Collection;
 
 use Illuminate\Support\Collection;
+use Paxx\Withings\Traits\JsonUtils;
 use Carbon\Carbon;
 use Paxx\Withings\Entity\Measure;
 
 class MeasureCollection extends Collection
 {
+    use JsonUtils;
+    
     /**
      * @param array $entries
      * @param callable $entryToMeasureCallback
@@ -71,6 +74,30 @@ class MeasureCollection extends Collection
             $exception = (PHP_MAJOR_VERSION < 7) ? '\Exception' : '\Error'; // Try to imitate PHP behaviour
             throw new $exception(sprintf('Call to undefined or private method %s::%s()', get_called_class(), $methodName));
         }
+    }
+    
+    /**
+     * Returns an array of parameters to serialize when this is serialized with
+     * json_encode().
+     *
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        // http://php.net/manual/en/function.get-object-vars.php#113435
+        $this_properties = array_keys(call_user_func('get_object_vars', $this));
+        // http://php.net/manual/en/function.get-object-vars.php#111360
+        /*
+        $me = $this; 
+        $this_list_properties = function() use ($me) { 
+            return get_object_vars($me); 
+        };
+        $this_properties = array_keys($this_list_properties());
+        */
+        $json = $this->jsonSerializeProperties($this_properties);
+        $json['measures'] = self::valueToJson($this->all());
+        
+        return $json;
     }
 
 }
