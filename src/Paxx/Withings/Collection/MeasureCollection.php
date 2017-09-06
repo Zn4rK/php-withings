@@ -65,9 +65,8 @@ class MeasureCollection extends Collection
         if (strncmp($methodName, 'get', 3) === 0)
         {
             $property = lcfirst(substr($methodName, 3));
-            // We may check if $this->{$property} is public here .. But it needs Reflection and this seems slow
-            // This is only an helper / retrocompat' feature to have getCreatedAt() for example
-            return $this->get($property) ?: $this->{$property};
+            $public_properties = array_keys(call_user_func('get_object_vars', $this));
+            return $this->get($property) ?: (in_array($property, $public_properties)) ? $this->{$property} : null;
         }
         else // Try to access an undefined or non-public function not starting with get
         {
