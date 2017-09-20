@@ -65,7 +65,7 @@ class Device implements JsonSerializable
     
     public function provideRem()
     {
-        return (isset(self::$modelMap[$modelId]['provideRem']) && self::$modelMap[$modelId]['provideRem']);
+        return (isset(self::$this->modelMap[$modelId]['provideRem']) && self::$this->modelMap[$modelId]['provideRem']);
     }
     
     public function jsonSerialize() {

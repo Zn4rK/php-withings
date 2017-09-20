@@ -103,7 +103,7 @@ class Measure implements JsonSerializable
      */
     public function asImperial()
     {
-        if ($converted->isImperial)
+        if ($this->isImperial)
         {
             return $this;
         }
@@ -132,22 +132,36 @@ class Measure implements JsonSerializable
         $json = [];
         
         if (isset($this->code))
+        {
             $json['code'] = self::valueToJson($this->code);
+        }
         
         if (isset($this->value))
+        {
             $json['value'] = self::valueToJson($this->value);
+        }
         
         if (isset($this->unit))
+        {
             $json['unit'] = self::valueToJson($this->unit);
+        }
         
         // https://stackoverflow.com/questions/5543490/json-naming-convention ...
         if ($this->isImperial)
+        {
             $json['isImperial'] = $this->isImperial;
+        }
         
         if (!empty($this->extra))
+        {
             foreach ($this->extra as $key => $extra)
+            {
                 if (isset($extra))
+                {
                     $json['extra'][$key] = self::valueToJson($extra);
+                }
+            }
+        }
         
         return $json;
     }

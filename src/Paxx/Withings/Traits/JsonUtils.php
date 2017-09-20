@@ -18,8 +18,12 @@ trait JsonUtils
     {
         $json = [];
         foreach ($properties as $property)
+        {
             if (isset($this->{$property})) // Don't serialize null properties
+            {
                 $json[$property] = self::valueToJson($this->{$property});
+            }
+        }
         
         return $json;
     }
