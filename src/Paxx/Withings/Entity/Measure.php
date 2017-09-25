@@ -2,329 +2,168 @@
 
 namespace Paxx\Withings\Entity;
 
-use Carbon\Carbon;
+use JsonSerializable;
+use Paxx\Withings\Traits\JsonUtils;
 
-class Measure extends Entity
+class Measure implements JsonSerializable
 {
-    /**
-     * @var array
-     */
-    private $types = array(
-        1  => 'weight',
-        4  => 'height',
-        5  => 'fatFreeMass',
-        6  => 'fatRatio',
-        8  => 'fatMassWeight',
-        9  => 'diastolicBloodPressure',
-        10 => 'systolicBloodPressure',
-        11 => 'heartPulse',
-        54 => 'sp02',
-        76 => 'muscleMass',
-        77 => 'hydration',
-        88 => 'boneMass'
+    use JsonUtils;
+    
+    public static $imperialConversionTable = array(
+        'm'    => [ 'ratio' => 0.393701, 'unit' => 'ft' ],
+        'kg'   => [ 'ratio' => 2.20462, 'unit' => 'lbs' ],
+        'mmHg' => [ 'ratio' => 0.0193367747, 'unit' => 'psi' ],
     );
-
+    
+    public $code;
+    public $value;
+    public $unit;
+    public $extra;
+    public $isImperial = false;
+    
     /**
-     * @var array
+     * @param $value
+     * @param $unit
+     * @return float
      */
-    private $categories = array(
-        1 => 'Measure',
-        2 => 'Target',
-    );
-
-    /**
-     * @var Integer
-     */
-    protected $attrib;
-
-    /**
-     * @var Carbon
-     */
-    protected $createdAt;
-
-    /**
-     * @var Integer
-     */
-    protected $category;
-
-    /**
-     * @var Integer
-     */
-    protected $groupId;
-
-    /**
-     * @var float
-     */
-    protected $weight;
-
-    /**
-     * @var float
-     */
-    protected $height;
-
-    /**
-     * @var float
-     */
-    protected $fatFreeMass;
-
-    /**
-     * @var float
-     */
-    protected $fatRatio;
-
-    /**
-     * @var float
-     */
-    protected $hydration;
-
-    /**
-     * @var float
-     */
-    protected $muscleMass;
-
-    /**
-     * @var float
-     */
-    protected $boneMass;
-
-    /**
-     * @var float
-     */
-    protected $fatMassWeight;
-
-    /**
-     * @var float
-     */
-    protected $diastolicBloodPressure;
-
-    /**
-     * @var float
-     */
-    protected $systolicBloodPressure;
-
-    /**
-     * @var float
-     */
-    protected $heartPulse;
-
-    /**
-     * @var float
-     */
-    protected $sp02;
-
-    /**
-     * @param array $params
-     */
-    public function __construct(array $params = array())
+    public function __construct(string $code, $value, string $unit, array $extra = null, $isImperial = false)
     {
-        $this->attrib = $params['attrib'];
-        $this->createdAt = Carbon::createFromTimestamp($params['date']);
-        $this->groupId = $params['grpid'];
-        $this->category = $params['category'];
-
-        foreach ($params['measures'] as $measure) {
-            if (isset($this->types[$measure['type']])) {
-                $this->{$this->types[$measure['type']]} = ($measure['value'] * pow(10, $measure['unit']));
-            }
+        $this->code = $code;
+        $this->value =$value;
+        $this->unit = $unit;
+        $this->extra = $extra;
+        $this->isImperial = $isImperial;
+    }
+    
+    /**
+     * Retreive an extra property
+     *
+     * @return mixed
+     */
+    public function __get($propertyName)
+    {
+        return (array_key_exists($propertyName, $this->extra)) ? $this->extra[$propertyName] : null;
+    }
+    
+    /**
+     * Retreive a measure information ; $measure->getCode() for example
+     * Try to look in  extra properties if it doesn't exists
+     *
+     * @return Measure
+     */
+    public function __call($methodName, $arguments)
+    {
+        if (strncmp($methodName, 'get', 3) === 0)
+        {
+            $property = lcfirst(substr($methodName, 3));
+            $public_properties = array_keys(call_user_func('get_object_vars', $this));
+            return (in_array($property, $public_properties)) ? $this->{$property} : $this->__get($property);
+        }
+        else // Try to access an undefined or non-public function not starting with get
+        {
+            $exception = (PHP_MAJOR_VERSION < 7) ? '\Exception' : '\Error'; // Try to imitate PHP behaviour
+            throw new $exception(sprintf('Call to undefined or private method %s::%s()', get_called_class(), $methodName));
         }
     }
-
-    /**
-     * Get the created at date
-     *
-     * @return Carbon
-     */
-    public function getCreatedAt() {
-        return $this->createdAt;
-    }
-
-    /**
-     * Weight (kg)
-     *
-     * Imperial conversion via $this->imperial()->getWeight()
-     *
-     * @return float
-     */
-    public function getWeight()
+    
+    public static function fromArray(array $datas)
     {
-        return $this->convert($this->weight, 'kg');
+        return new self(
+            (isset($datas['code'])) ? $datas['code'] : null,
+            (isset($datas['value'])) ? $datas['value'] : null,
+            (isset($datas['unit'])) ? $datas['unit'] : null,
+            (isset($datas['extra'])) ? $datas['extra'] : null,
+            (isset($datas['is_imperial'])) ? $datas['is_imperial'] : (isset($datas['isImperial'])) ? $datas['isImperial'] : null
+        );
+    }
+    
+    public function toArray()
+    {
+        return [
+            'code' => $this->code,
+            'value' => $this->value,
+            'unit' => $this->unit,
+            'extra' => $this->extra,
+            'is_imperial' => $this->isImperial,
+        ];
+    }
+    
+    public function formatted()
+    {
+        return floatval(round($this->value, 2)).' '.((!empty($this->unit)) ? $this->unit : '');
     }
 
-    /**
-     * Height (meter)
-     *
-     * Imperial conversion via $this->imperial()->getHeight()
-     *
-     * @return float
-     */
-    public function getHeight()
+    public function __toString()
     {
-        return $this->convert($this->height, 'm');
+        return $this->code.': '.$this->formatted();
+    }
+    
+    /**
+     * @return Measure
+     */
+    public function asImperial()
+    {
+        if ($this->isImperial)
+        {
+            return $this;
+        }
+        elseif (array_key_exists($this->unit, self::$imperialConversionTable))
+        {
+            $converted = clone $this;
+            $converted->value = round($this->value * self::$imperialConversionTable[$this->unit]['ratio'], 2);
+            $converted->unit = self::$imperialConversionTable[$this->unit]['unit'];
+            $converted->isImperial = true;
+            return $converted;
+        }
+        else
+        {
+            return $this; // Or null ? Or false ? Or exception ?
+        }
+    }
+    
+    /**
+     * Returns an array of parameters to serialize when this is serialized with
+     * json_encode().
+     *
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        $json = [];
+        
+        if (isset($this->code))
+        {
+            $json['code'] = self::valueToJson($this->code);
+        }
+        
+        if (isset($this->value))
+        {
+            $json['value'] = self::valueToJson($this->value);
+        }
+        
+        if (isset($this->unit))
+        {
+            $json['unit'] = self::valueToJson($this->unit);
+        }
+        
+        // https://stackoverflow.com/questions/5543490/json-naming-convention ...
+        if ($this->isImperial)
+        {
+            $json['isImperial'] = $this->isImperial;
+        }
+        
+        if (!empty($this->extra))
+        {
+            foreach ($this->extra as $key => $extra)
+            {
+                if (isset($extra))
+                {
+                    $json['extra'][$key] = self::valueToJson($extra);
+                }
+            }
+        }
+        
+        return $json;
     }
 
-    /**
-     * Free Mass (kg)
-     *
-     * Imperial conversion via $this->imperial()->getFatFreeMass()
-     *
-     * @return float
-     */
-    public function getFatFreeMass() {
-        return $this->convert($this->fatFreeMass, 'kg');
-    }
-
-    /**
-     * Fat Ratio (%)
-     *
-     * @return float
-     */
-    public function getFatRatio()
-    {
-        return $this->fatRatio;
-    }
-
-    /**
-     * Fat Mass Weight (kg)
-     *
-     * Imperial conversion via $this->imperial()->getFatMassWeight()
-     *
-     * @return float
-     */
-    public function getFatMassWeight()
-    {
-        return $this->convert($this->fatMassWeight, 'kg');
-    }
-
-    /**
-     * Diastolic Blood Pressure (mmHg)
-     *
-     * Imperial conversion via $this->imperial()->getDiastolicBloodPressure()
-     *
-     * @return float
-     */
-    public function getDiastolicBloodPressure()
-    {
-        return $this->convert($this->diastolicBloodPressure, 'mmHg');
-    }
-
-    /**
-     * Systolic Blood Pressure (mmHg)
-     *
-     * Imperial conversion via $this->imperial()->getSystolicBloodPressure()
-     *
-     * @return float
-     */
-    public function getSystolicBloodPressure()
-    {
-        return $this->convert($this->systolicBloodPressure, 'mmHg');
-    }
-
-    /**
-     * Heart Pulse
-     *
-     * @return float
-     */
-    public function getHeartPulse()
-    {
-        return $this->heartPulse;
-    }
-
-    /**
-     * Sp02
-     *
-     * @return float
-     */
-    public function getSp02()
-    {
-        return $this->sp02;
-    }
-
-    /**
-     * Is ambiguous
-     *
-     * @return bool
-     */
-    public function isAmbiguous()
-    {
-        return ($this->attrib == 1 || $this->attrib == 4);
-    }
-
-    /**
-     * Is it a measure
-     *
-     * @return bool
-     */
-    public function isMeasure()
-    {
-        return ($this->category == 1);
-    }
-
-    /**
-     * Is it the target measure
-     *
-     * @return bool
-     */
-    public function isTarget()
-    {
-        return ($this->category == 2);
-    }
-
-    /**
-     * Get the category name
-     *
-     * @return String
-     */
-    public function getCategoryName()
-    {
-        return $this->categories[$this->category];
-    }
-
-    /**
-     * Get the category raw value (1 for "measure", 2 for "target")
-     *
-     * @return int
-     */
-    public function getCategory()
-    {
-        return $this->category;
-    }
-    /**
-     * bone ratio
-     *
-     * @return float
-     */
-    public function getBoneRatio()
-    {
-        return $this->convert($this->boneMass, 'kg')/$this->convert($this->weight, 'kg')*100;
-    }
-
-    /**
-     * fat free ratio
-     *
-     * @return float
-     */
-    public function getFatFreeRatio()
-    {
-        return $this->convert($this->fatFreeMass, 'kg')/$this->convert($this->weight, 'kg')*100;
-    }
-
-    /**
-     * muscle ratio
-     *
-     * @return float
-     */
-    public function getMuscleRatio()
-    {
-        return $this->convert($this->muscleMass, 'kg')/$this->convert($this->weight, 'kg')*100;
-    }
-
-    /**
-     * hydration ratio
-     *
-     * @return float
-     */
-    public function getHydrationRatio()
-    {
-        return $this->convert($this->hydration, 'kg')/$this->convert($this->weight, 'kg')*100;
-    }
 }

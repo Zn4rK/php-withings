@@ -7,10 +7,12 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Subscriber\Oauth\Oauth1;
 use Paxx\Withings\Exception\ApiException;
 use Paxx\Withings\Exception\WbsException;
+use Carbon\Carbon;
 
 class Api
 {
-    const ENDPOINT = 'http://wbsapi.withings.net/';
+    const OLD_ENDPOINT = 'https://wbsapi.withings.net/';
+    const ENDPOINT = 'https://api.health.nokia.com/';
 
     private $identifier;
     private $secret;
@@ -32,16 +34,19 @@ class Api
         0    => 'Operation was successful',
         247  => 'The user_id provided is absent, or incorrect',
         250  => 'The provided user_id and/or Oauth credentials do not match',
+        283  => 'Token is invalid or doesn\'t exist',
         286  => 'No such subscription was found',
         293  => 'The callback URL is either absent or incorrect (Note: Withings only sends notifications to valid post-requests)',
         294  => 'No such subscription could be deleted',
         304  => 'The comment is either absent or incorrect',
         305  => 'Too many notifications are already set',
+        328  => 'The user is deactivated',
         342  => 'The signature (using Oauth) is invalid',
         343  => 'Wrong Notification Callback Url doesn\'t exist',
         601  => 'Too Many Requests',
-        2554 => 'Unspecified unknown error occurred',
-        2555 => 'An unknown error occurred'
+        2554 => 'Wrong action or wrong webservice',
+        2555 => 'An unknown error occurred',
+        2556 => 'Service is not defined',
     );
 
     public function __construct(array $params = array())
@@ -107,16 +112,18 @@ class Api
      * @return bool
      * @throws WbsException
      */
-    private function request($path = '', $action = '', $params = array())
+    public function request($path = '', $action = '', $params = array(), $oldEndpoint = false)
     {
         $params['userid'] = $this->user_id;
+        
+        $endpoint = ($oldEndpoint) ? self::OLD_ENDPOINT : self::ENDPOINT;
 
         if (!empty($action)) {
             $params['action'] = $action;
         }
 
         // Build a request
-        $request = $this->client->get($path, array('query' => $params));
+        $request = $this->client->get($endpoint.$path, array('query' => $params));
 
         // Decode the response
         $response = json_decode($request->getBody()->getContents(), true);
@@ -144,7 +151,7 @@ class Api
      */
     public function getUser()
     {
-        $user = $this->request('user', 'getbyuserid');
+        $user = $this->request('user', 'getbyuserid', null);
 
         // Pluck single record
         $user = end($user['users']);
@@ -162,10 +169,8 @@ class Api
      * @return Collection\ActivityCollection
      * @throws WbsException
      */
-    public function getActivity($start='', $end='')
+    public function getActivity($start='', $end='', array $params = array())
     {
-        $params = array();
-
         // Check if we have a single day
         if(!empty($start) && empty($end)) {
             $params['date'] = $start;
@@ -177,20 +182,92 @@ class Api
 
         $activity = $this->request('v2/measure', 'getactivity', $params);
 
-        return new Collection\ActivityCollection($activity);
+        return Collection\ActivityCollection::fromParams($activity);
     }
 
     /**
      * Get user's measurements
+     * /!\ This is an alias to getMeasureGroups(), because they are actually
+     * MeasureGroups. You should use getMeasureGroups()
      *
      * @param array $params
-     * @return Collection\MeasureCollection
+     * @return Collection\MeasureGroupCollection
      * @throws WbsException       If an error is returned from the API
      */
     public function getMeasures(array $params = array())
     {
+        return $this->getMeasureGroups($params);
+    }
+    
+    /**
+     * Get user's measurements
+     *
+     * @param array $params
+     * @return Collection\MeasureGroupCollection
+     * @throws WbsException       If an error is returned from the API
+     */
+    public function getMeasureGroups(array $params = array())
+    {
         $measure = $this->request('measure', 'getmeas', $params);
-        return new Collection\MeasureCollection($measure);
+        return Collection\MeasureGroupCollection::fromParams($measure);
+    }
+    
+    /**
+     * Get user's intraday activity
+     * 
+     *  /!\ "Access to this service needs special activation."
+     *
+     * @param array $params
+     * @return Collection\IntradayActivityCollection
+     * @throws WbsException       If an error is returned from the API
+     */
+    public function getIntradayActivity(array $params = array())
+    {
+        $intradayActivity = $this->request('v2/measure', 'getintradayactivity', $params);
+        return Collection\IntradayActivityCollection::fromParams($intradayActivity);
+    }
+    
+    /**
+     * Get user's sleeps states
+     *
+     * @param array $params
+     * @return Collection\SleepStateCollection
+     * @throws WbsException       If an error is returned from the API
+     */
+    public function getSleep($startdate = null, $enddate = null, array $params = array())
+    {
+        if ($startdate == null || $enddate == null) {
+            $params['startdate'] = Carbon::yesterday()->timestamp;
+            $params['enddate'] = Carbon::today()->timestamp;
+        }
+        $measure = $this->request('v2/sleep', 'get', $params);
+        return Collection\SleepStateCollection::fromParams($measure);
+    }
+    
+    /**
+     * Get user's sleeps summary
+     *
+     * @param array $params
+     * @return Collection\SleepCollection
+     * @throws WbsException       If an error is returned from the API
+     */
+    public function getSleepSummary(array $params = array())
+    {
+        $measure = $this->request('v2/sleep', 'getsummary', $params);
+        return Collection\SleepCollection::fromParams($measure);
+    }
+    
+    /**
+     * Get user's workouts
+     *
+     * @param array $params
+     * @return Collection\WorkoutCollection
+     * @throws WbsException       If an error is returned from the API
+     */
+    public function getWorkouts(array $params = array())
+    {
+        $measure = $this->request('v2/measure', 'getworkouts', $params);
+        return Collection\WorkoutCollection::fromParams($measure);
     }
 
     /**
@@ -257,7 +334,7 @@ class Api
     public function listSubscriptions($appli = 1)
     {
         $list = $this->request('notify', 'list', array('appli' => $appli));
-        return new Collection\SubscriptionCollection($list);
+        return Collection\SubscriptionCollection::fromParams($list);
     }
 
     /**

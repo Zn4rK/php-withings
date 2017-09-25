@@ -2,26 +2,23 @@
 
 namespace Paxx\Withings\Collection;
 
-use Illuminate\Support\Collection as Collection;
-use Paxx\Withings\Entity\Subscription;
+use Illuminate\Support\Collection;
+use Paxx\Withings\MeasureCollection\Workout;
 
-class SubscriptionCollection extends Collection
+class WorkoutCollection extends Collection
 {
 
-    /**
-     * @param array $params
-     */
     public static function fromParams(array $params = array())
     {
         $instance = new self();
         
         //$instance->raw = $params;
         
-        foreach($params['profiles'] as $profile)
+        foreach ($params['series'] as $workout)
         {
-            $instance->push(new Subscription($profile));
+            $instance->push(Workout::fromParams($workout));
         }
-
+        
         unset($params);
         
         return $instance;

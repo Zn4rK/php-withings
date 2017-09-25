@@ -51,11 +51,50 @@ echo 'Hello ' . $user->getFirstName() . '!<br>';
 echo 'Here are your measures: <hr>';
 
 /**
- * @var \Paxx\Withings\Entity\Measure $measure
+ * @var \Paxx\Withings\MeasureCollection\MeasureGroup $measure
  */
-foreach($user->getMeasures() as $measure) {
-    echo $measure->getCreatedAt() . ': <br>';
-    echo 'In metric: ' . $measure->getWeight() . ' kg<br>';
-    echo 'In imperial: ' . $measure->imperial()->getWeight() . ' lbs';
-    echo '<hr>';
+$measureGroups = $user->getMeasureGroups();
+foreach($measureGroups as $measureGroup) {
+    echo $measureGroup->getCreatedAt() . ': <br>';
+    if ($measureGroup->availableMeasures()->contains('weight'))
+    {
+        echo 'In metric: ' . $measureGroup->getWeight()->formatted() . '<br>'; // in kg
+        echo 'In imperial: ' . $measureGroup->weight->asImperial()->formatted(); // in lbs
+        echo '<hr>';
+    }
+    else
+    {
+        echo 'The measure group #'.$measureGroup->groupId.' doesn\'t contain weight<br>';
+    }
 }
+/*
+2017-08-30 02:30:00: 
+The measure group #892135111 doesn't contain weight
+2017-08-29 14:11:43: 
+The measure group #890842749 doesn't contain weight
+2017-08-29 14:11:43: 
+In metric: 75 kg
+In imperial: 165.35 lbs
+*/
+
+// As $measureGroups is a Collection, you can sort it ; but you'll lost properties added around the items
+// For example : 
+$sortedMeasureGroups = $measureGroups->sortBy(
+    function ($measureGroup, $key) {
+        return $measureGroup->createdAt;
+    }
+);
+// Because the Collection class makes a copy, the $measureGroups->updatedAt is lost in $sortedMeasureGroups
+
+foreach ($user->getWorkouts() as $workout) {
+    echo 'Workout of '.$workout->category->name.
+        ' started at '.$workout->startDate.
+        ' for '.$workout->endDate->diffForHumans($workout->startDate, true).
+        ' and burned '.$workout->calories->formatted().'<hr>';
+}
+/*
+Workout of Yoga started at 2017-08-29 02:09:00 for 1 hour and burned 209 kcal
+Workout of Run started at 2017-08-30 02:09:00 for 20 minutes and burned 294 kcal
+Workout of Lift Weights started at 2017-08-31 01:09:00 for 23 minutes and burned 117 kcal
+Workout of Bicycling started at 2017-08-31 01:47:00 for 20 minutes and burned 313 kcal
+*/

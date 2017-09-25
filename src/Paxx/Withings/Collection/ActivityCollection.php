@@ -1,25 +1,35 @@
-<?php namespace Paxx\Withings\Collection;
+<?php
+
+namespace Paxx\Withings\Collection;
 
 use Illuminate\Support\Collection;
-use Paxx\Withings\Entity\Activity;
+use Paxx\Withings\MeasureCollection\Activity;
 
-class ActivityCollection extends Collection {
+class ActivityCollection extends Collection
+{
 
-    public function __construct(array $params = array()) {
-        $items = array();
-
-        if(isset($params['activities'])) {
-            foreach($params['activities'] as &$activity) {
-                $activity = new Activity($activity);
+    public static function fromParams(array $params = array())
+    {
+        $instance = new self();
+        
+        //$instance->raw = $params;
+        
+        if (isset($params['activities']))
+        {
+            foreach ($params['activities'] as $activity)
+            {
+                $instance->push(Activity::fromParams($activity));
             }
-
-            $items = $params['activities'];
-        } else {
-            // We only have one item
-            $items[] = $params;
         }
-
-        parent::__construct($items);
+        else
+        {
+            // We only have one item
+            $instance->push(Activity::fromParams($params));
+        }
+        
         unset($params);
+        
+        return $instance;
     }
+
 }
